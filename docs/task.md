@@ -1,0 +1,45 @@
+# FridgeForager Task List
+
+- [ ] Project Initialization
+- [ ] Project Initialization
+    - [x] Initialize Next.js app with Tailwind CSS
+    - [ ] Clean up default boilerplate `[/]`
+    - [ ] Setup env variables (if needed, though API key is user-input) `[/]`
+    - [ ] Clean up default boilerplate
+    - [ ] Setup env variables (if needed, though API key is user-input)
+- [ ] Core Features Implementation
+    - [/] Create OpenAI API Helper / Server Action
+    - [x] Create `.env.local` for Server-Side API Key
+    - [x] Design & Implement Home Page
+        - [x] Image Upload Component (Drag & Drop)
+        - [x] Add Camera Capture Button (Mobile)
+        - [x] Add Cuisine & Equipment Filters
+    - [x] Update Vision Logic
+        - [x] Detect Ingredients + Expiration Status
+    - [x] Update Recipe Logic
+        - [x] Handle Cuisine & Equipment Params
+        - [x] Generate Magic Spice Suggestion
+    - [x] Design & Implement Results Page
+        - [x] Identify Ingredients Action
+        - [x] Generate Recipe Action
+    - [/] Implement Vision Logic (Identify Ingredients)
+    - [/] Implement Recipe Logic (Generate Recipe)
+    - [x] Design & Implement Results Page
+        - [x] Recipe Display
+        - [x] Health Score Badge
+- [ ] UI/UX Polish
+    - [x] Apply "Food-themed" color palette
+    - [x] Add Loading States (Spinner)
+    - [x] Ensure Mobile Responsiveness
+    - [x] Modern UI components
+- [x] Mobile App Conversion (PWA)
+    - [x] Create `manifest.json`
+    - [x] Configure Metadata (Installable, Standalone)
+    - [x] Add App Icons
+    - [x] Configure Service Worker (`serwist` or `next-pwa`) for offline support
+- [ ] Implement Mock Mode (Fallback)
+    - [ ] Add dummy ingredient identification
+    - [ ] Add dummy recipe generation
+    - [ ] Enable automatically on API failure
+- [x] Verification
+    - [x] Manual Test: Flow from Upload to Result
