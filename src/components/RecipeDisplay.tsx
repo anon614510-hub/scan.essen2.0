@@ -1,5 +1,7 @@
+"use client";
+
 import { Recipe } from "@/lib/types";
-import { CheckCircle, AlertCircle, ChefHat } from "lucide-react";
+import { CheckCircle, AlertCircle, ChefHat, Sparkles, Star } from "lucide-react";
 import clsx from "clsx";
 
 interface RecipeDisplayProps {
@@ -9,42 +11,63 @@ interface RecipeDisplayProps {
 
 export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
     const getHealthColor = (score: number) => {
-        if (score >= 8) return "bg-green-100 text-green-700 border-green-200";
-        if (score >= 5) return "bg-yellow-100 text-yellow-700 border-yellow-200";
-        return "bg-red-100 text-red-700 border-red-200";
+        if (score >= 8) return "from-green-500/20 to-emerald-500/30 text-green-300 border-green-500/30";
+        if (score >= 5) return "from-yellow-500/20 to-amber-500/30 text-yellow-300 border-yellow-500/30";
+        return "from-red-500/20 to-rose-500/30 text-red-300 border-red-500/30";
+    };
+
+    const getHealthBadge = (score: number) => {
+        if (score >= 8) return "bg-gradient-to-r from-green-500 to-emerald-500";
+        if (score >= 5) return "bg-gradient-to-r from-yellow-500 to-amber-500";
+        return "bg-gradient-to-r from-red-500 to-rose-500";
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500">
-            <div className="bg-primary/10 p-6 border-b border-primary/10 flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <ChefHat className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900">{recipe.title}</h2>
-                    <p className="text-sm text-gray-500">AI Chef's Recommendation</p>
-                </div>
-                <div className={clsx(
-                    "ml-auto px-4 py-2 rounded-xl border flex flex-col items-center justify-center",
-                    getHealthColor(recipe.health_score)
-                )}>
-                    <span className="text-xs font-bold uppercase tracking-wider">Health</span>
-                    <span className="text-2xl font-black">{recipe.health_score}/10</span>
+        <div className="bg-gradient-to-b from-gray-900/95 to-gray-950/95 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 border border-white/10">
+            {/* Header with gradient */}
+            <div className="relative bg-gradient-to-r from-emerald-600/20 via-teal-500/20 to-cyan-500/20 p-6 border-b border-white/10">
+                {/* Background glow */}
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 via-transparent to-cyan-400/5" />
+
+                <div className="relative flex items-center gap-4">
+                    <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/20">
+                        <ChefHat className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                        <h2 className="text-2xl font-bold text-white mb-1">{recipe.title}</h2>
+                        <p className="text-sm text-emerald-300/80 flex items-center gap-1.5">
+                            <Sparkles className="w-4 h-4" />
+                            AI Chef's Recommendation
+                        </p>
+                    </div>
+                    <div className={clsx(
+                        "px-4 py-3 rounded-2xl border flex flex-col items-center justify-center bg-gradient-to-br backdrop-blur-sm",
+                        getHealthColor(recipe.health_score)
+                    )}>
+                        <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">Health</span>
+                        <span className="text-3xl font-black">{recipe.health_score}<span className="text-lg opacity-60">/10</span></span>
+                    </div>
                 </div>
             </div>
 
-            <div className="p-6 sm:p-8 space-y-8">
+            <div className="p-6 space-y-8">
                 {/* Ingredients */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-6 bg-secondary rounded-full"></span>
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
+                        <span className="w-1.5 h-7 bg-gradient-to-b from-amber-400 to-orange-500 rounded-full"></span>
                         Ingredients
                     </h3>
-                    <ul className="grid sm:grid-cols-2 gap-3">
+                    <ul className="grid sm:grid-cols-2 gap-2.5">
                         {recipe.ingredients.map((ing, i) => (
-                            <li key={i} className="flex items-center gap-2 text-gray-700 bg-gray-50 p-2 rounded-lg">
-                                <CheckCircle className="w-4 h-4 text-primary shrink-0" />
-                                <span>{ing}</span>
+                            <li
+                                key={i}
+                                className="flex items-center gap-3 text-gray-200 bg-white/5 hover:bg-white/10 p-3 rounded-xl border border-white/5 transition-all duration-200 hover:border-white/10 animate-in fade-in duration-300"
+                                style={{ animationDelay: `${i * 50}ms` }}
+                            >
+                                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                    <CheckCircle className="w-4 h-4 text-emerald-400" />
+                                </div>
+                                <span className="text-sm">{ing}</span>
                             </li>
                         ))}
                     </ul>
@@ -52,17 +75,21 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
 
                 {/* Instructions */}
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <span className="w-1 h-6 bg-secondary rounded-full"></span>
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
+                        <span className="w-1.5 h-7 bg-gradient-to-b from-blue-400 to-indigo-500 rounded-full"></span>
                         Instructions
                     </h3>
                     <div className="space-y-4">
                         {recipe.instructions.map((step, i) => (
-                            <div key={i} className="flex gap-4">
-                                <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold shrink-0">
+                            <div
+                                key={i}
+                                className="flex gap-4 animate-in fade-in slide-in-from-left-2 duration-300"
+                                style={{ animationDelay: `${(recipe.ingredients.length + i) * 50}ms` }}
+                            >
+                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-lg shadow-blue-500/20">
                                     {i + 1}
                                 </div>
-                                <p className="text-gray-700 pt-1 leading-relaxed">{step}</p>
+                                <p className="text-gray-300 pt-2 leading-relaxed text-sm">{step}</p>
                             </div>
                         ))}
                     </div>
@@ -70,26 +97,36 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
 
                 {/* Magic Spice */}
                 {recipe.magic_spice && (
-                    <div className="bg-gradient-to-r from-amber-100 to-orange-100 p-5 rounded-2xl border border-orange-200">
-                        <h3 className="text-sm font-bold uppercase text-orange-800 tracking-wider mb-2 flex items-center gap-2">
-                            ✨ Magic Spice Suggestion
-                        </h3>
-                        <p className="text-xl font-bold text-gray-900 mb-1">{recipe.magic_spice}</p>
-                        <p className="text-sm text-gray-700 italic">"{recipe.magic_spice_reasoning}"</p>
+                    <div className="relative bg-gradient-to-r from-amber-500/10 via-orange-500/15 to-rose-500/10 p-5 rounded-2xl border border-orange-500/20 overflow-hidden">
+                        {/* Sparkle decorations */}
+                        <div className="absolute top-2 right-4 text-amber-400/30 animate-pulse">✦</div>
+                        <div className="absolute bottom-3 right-8 text-orange-400/20 animate-pulse" style={{ animationDelay: '500ms' }}>✦</div>
+
+                        <div className="relative">
+                            <h3 className="text-sm font-bold uppercase text-amber-400 tracking-wider mb-3 flex items-center gap-2">
+                                <Star className="w-4 h-4 fill-amber-400" />
+                                Magic Spice Suggestion
+                            </h3>
+                            <p className="text-xl font-bold text-white mb-2">{recipe.magic_spice}</p>
+                            <p className="text-sm text-amber-200/70 italic leading-relaxed">"{recipe.magic_spice_reasoning}"</p>
+                        </div>
                     </div>
                 )}
 
-                {/* Stats / Reasoning */}
+                {/* Health Reasoning */}
                 {recipe.health_reasoning && (
-                    <div className="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm border border-blue-100 flex gap-3">
-                        <AlertCircle className="w-5 h-5 shrink-0" />
-                        <p>{recipe.health_reasoning}</p>
+                    <div className="bg-blue-500/10 text-blue-200 p-4 rounded-2xl text-sm border border-blue-500/20 flex gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-blue-500/20 flex items-center justify-center shrink-0">
+                            <AlertCircle className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <p className="leading-relaxed pt-1">{recipe.health_reasoning}</p>
                     </div>
                 )}
 
+                {/* Action Button */}
                 <button
                     onClick={onReset}
-                    className="w-full py-4 bg-gray-900 hover:bg-black text-white rounded-xl font-bold transition-transform hover:scale-[1.01] active:scale-[0.99]"
+                    className="w-full py-4 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-700 hover:to-gray-800 text-white rounded-2xl font-bold text-lg transition-all duration-300 hover:shadow-lg hover:shadow-white/5 active:scale-[0.98] border border-white/10"
                 >
                     Cook Something Else
                 </button>
