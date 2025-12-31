@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback, ChangeEvent } from "react";
+import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff, ChefHat } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
 import { analyzeImage, generateRecipe } from "@/app/actions";
@@ -295,14 +295,16 @@ export default function ArInterface() {
 
                 setIngredients(validIngredients);
                 setScanStatus(`✅ Found ${validIngredients.length} item${validIngredients.length > 1 ? 's' : ''}!`);
-                // Trigger cool scan animation
                 setNewlyScannedItems(validIngredients.map((i: Ingredient) => i.name));
                 setShowScanSuccess(true);
+
+                // Automatically trigger recipe generation after a short delay for animation
                 setTimeout(() => {
                     setShowScanSuccess(false);
                     setNewlyScannedItems([]);
                     setScanStatus("");
-                }, 2500);
+                    handleGenerateRecipe(validIngredients);
+                }, 1500);
             }
         } catch (err) {
             console.error("Scan error:", err);
@@ -314,16 +316,18 @@ export default function ArInterface() {
     };
 
     // Generate recipe
-    const handleGenerateRecipe = async () => {
-        if (ingredients.length === 0) {
+    const handleGenerateRecipe = async (ingredientsToUse?: Ingredient[]) => {
+        console.log("DEBUG: handleGenerateRecipe triggered!");
+        const sourceIngredients = ingredientsToUse || ingredients;
+
+        if (sourceIngredients.length === 0) {
             setError("Scan ingredients first!");
             return;
         }
         setError(null);
         setIsGenerating(true);
-        console.log("Generating recipe for ingredients:", ingredients.map(i => i.name));
         try {
-            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript);
+            const result = await generateRecipe(sourceIngredients, "Any", [], voiceTranscript);
             console.log("Recipe generation result:", result);
             if (result.error) {
                 console.error("Recipe error:", result.error);
@@ -512,6 +516,22 @@ export default function ArInterface() {
                 </div>
             )}
 
+            {/* Loading Overlay for Recipe Generation */}
+            {isGenerating && (
+                <div className="absolute inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                    <div className="bg-white rounded-3xl p-8 flex flex-col items-center gap-4 shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="relative">
+                            <div className="w-16 h-16 rounded-full border-4 border-orange-100 border-t-orange-500 animate-spin" />
+                            <ChefHat className="absolute inset-0 m-auto w-6 h-6 text-orange-500" />
+                        </div>
+                        <div className="text-center">
+                            <h3 className="font-bold text-gray-900">Creating Recipe...</h3>
+                            <p className="text-sm text-gray-500 mt-1">Our AI chef is cooking something up</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Error Toast */}
             {error && (
                 <div className="absolute top-4 left-4 right-4 z-50 bg-red-100 text-red-700 px-4 py-3 rounded-2xl text-sm font-medium shadow-lg">
@@ -549,14 +569,18 @@ export default function ArInterface() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder={isListening ? "Listening..." : "Find recipes using Instamart..."}
+                            placeholder={isListening ? "Listening..." : "Recipe preferences? (e.g. 'spicy', 'quick')"}
                             className={clsx(
                                 "w-full h-10 rounded-xl bg-gray-100 pl-10 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300",
                                 isListening && "ring-2 ring-orange-400 animate-pulse"
                             )}
-                            onFocus={handleGenerateRecipe}
                             value={voiceTranscript}
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVoiceTranscript(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleGenerateRecipe();
+                                }
+                            }}
                         />
                         <button
                             onClick={startListening}
@@ -604,7 +628,7 @@ export default function ArInterface() {
 
                         {/* Separate Search Button */}
                         <button
-                            onClick={handleGenerateRecipe}
+                            onClick={() => handleGenerateRecipe()}
                             disabled={isGenerating || ingredients.length === 0}
                             className={clsx(
                                 "flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200",

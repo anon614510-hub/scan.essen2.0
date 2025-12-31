@@ -13,4 +13,7 @@ export interface Recipe {
     health_reasoning?: string;
     magic_spice?: string;
     magic_spice_reasoning?: string;
+    youtube_urls?: string[];
+    vlog_urls?: string[];
+    image_urls?: string[];
 }

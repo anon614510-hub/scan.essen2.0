@@ -1,8 +1,28 @@
 "use server";
 
 import { Ingredient, Recipe } from "@/lib/types";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "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";
+// Helper to clean API keys (remove quotes, whitespace)
+const cleanKey = (key: string | undefined) => key?.replace(/["']/g, "").trim();
+
+const OPENROUTER_API_KEY = cleanKey(process.env.OPENROUTER_API_KEY);
+const GEMINI_API_KEY = cleanKey(process.env.GEMINI_API_KEY);
+
+console.log("DEBUG: API Keys check:", {
+    openrouter: OPENROUTER_API_KEY ? "Defined" : "MISSING",
+    gemini: GEMINI_API_KEY ? "Defined" : "MISSING"
+});
+
+if (!OPENROUTER_API_KEY) {
+    console.warn("WARNING: OPENROUTER_API_KEY is not defined in environment variables.");
+}
+
+if (!GEMINI_API_KEY) {
+    console.warn("WARNING: GEMINI_API_KEY is not defined. direct Gemini fallback will be unavailable.");
+}
+
+const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
 
 /**
  * Analyze a fridge image to detect ingredients using OpenRouter
@@ -35,14 +55,58 @@ For each food item, provide:
 Respond with a JSON array of food items only, no other text. Example:
 [{"name": "Chips", "quantity": "1 packet", "expiry_status": "fresh", "expiry_reasoning": "Sealed package"}]`;
 
+        // 1. Try Google Gemini directly first (High Rate Limit)
+        if (genAI) {
+            const geminiModels = ["gemini-1.5-flash", "gemini-2.0-flash-exp"];
+            for (const modelName of geminiModels) {
+                try {
+                    console.log(`Trying direct Google Gemini API (${modelName})...`);
+                    const model = genAI.getGenerativeModel({ model: modelName });
+
+                    // Convert base64 data URL to Google AI Format
+                    const base64Data = base64Image.split(",")[1] || base64Image;
+                    const mimeType = base64Image.match(/data:([^;]+);/)?.[1] || "image/jpeg";
+
+                    const result = await model.generateContent([
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                data: base64Data,
+                                mimeType: mimeType
+                            }
+                        }
+                    ]);
+
+                    const content = result.response.text();
+                    // Find and parse JSON array
+                    const jsonMatch = content.match(/\[[\s\S]*\]/);
+                    if (jsonMatch) {
+                        const parsed = JSON.parse(jsonMatch[0].replace(/,\s*\]/g, "]").replace(/,\s*\}/g, "}"));
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            console.log(`Gemini ${modelName} Success!`);
+                            return { ingredients: parsed };
+                        }
+                    }
+                } catch (geminiError: any) {
+                    console.error(`Gemini (${modelName}) Image Error:`, geminiError.message || geminiError);
+                    if (geminiError.status === 404) {
+                        console.log(`Model ${modelName} not found or restricted. Trying next...`);
+                        continue;
+                    }
+                }
+            }
+        }
+
         // VERIFIED free vision models from OpenRouter API
         const visionModels = [
+            "meta-llama/llama-3.2-11b-vision-instruct:free",
+            "google/gemma-3-12b-it:free",
             "qwen/qwen2.5-vl-72b-instruct:free",
             "qwen/qwen-2.5-vl-7b-instruct:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free",
             "nvidia/nemotron-nano-12b-v2-vl:free",
-            "google/gemini-2.0-flash-exp:free"
+            "google/gemini-2.0-flash-exp:free",
+            "mistralai/pixtral-12b:free",
+            "microsoft/phi-3.5-vision-instruct:free"
         ];
 
         for (const model of visionModels) {
@@ -52,9 +116,7 @@ Respond with a JSON array of food items only, no other text. Example:
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "http://localhost:3000",
-                        "X-Title": "Scan-Essen"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         model: model,
@@ -73,7 +135,11 @@ Respond with a JSON array of food items only, no other text. Example:
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, data.error.message);
+                    const errorMsg = data.error.message || "";
+                    console.log(`DEBUG: Model ${model} failed explicitly:`, errorMsg);
+                    if (errorMsg.includes("free-models-per-day") || errorMsg.includes("limit exceeded")) {
+                        return { ingredients: [], error: "Daily limit reached for free models on OpenRouter. Please try again tomorrow or add a credit for more requests." };
+                    }
                     continue;
                 }
 
@@ -115,7 +181,7 @@ Respond with a JSON array of food items only, no other text. Example:
                         }
                     }
                 } catch (parseError) {
-                    console.error("Failed to parse ingredients:", parseError);
+                    console.error("DEBUG: Failed to parse ingredients from model " + model + ". Content was:", content);
                     continue; // Move to next model
                 }
 
@@ -129,7 +195,7 @@ Respond with a JSON array of food items only, no other text. Example:
             }
         }
 
-        return { ingredients: [], error: "All vision models unavailable. Please try again." };
+        return { ingredients: [], error: "All vision models unavailable. Please check your OpenRouter API key in .env.local and try again." };
     } catch (error) {
         console.error("Image analysis error:", error);
         return {
@@ -155,6 +221,8 @@ export async function generateRecipe(
         if (ingredients.length === 0) {
             return { recipe: null, error: "No ingredients provided" };
         }
+
+        console.log("DEBUG: generateRecipe called with", ingredients.length, "ingredients. Prefs:", preferences);
 
         const ingredientList = ingredients
             .map((i) => `${i.name}${i.quantity ? ` (${i.quantity})` : ""}`)
@@ -186,23 +254,72 @@ Respond with a JSON object containing:
 - health_reasoning: brief explanation of health score
 - magic_spice: one additional ingredient suggestion to elevate the dish
 - magic_spice_reasoning: why this spice would work
+- image_keywords: a comma-separated list of 3-5 descriptive keywords for high-quality food photography search (e.g., "creamy, pasta, basil, dish")
 
 Respond with JSON only, no other text.
 
 Create a recipe using these ingredients: ${ingredientList}`;
 
+        // 1. Try Google Gemini directly first (High Rate Limit)
+        if (genAI) {
+            const geminiModels = ["gemini-1.5-flash", "gemini-2.0-flash-exp"];
+            for (const modelName of geminiModels) {
+                try {
+                    console.log(`Trying direct Google Gemini API (${modelName}) for recipe...`);
+                    const model = genAI.getGenerativeModel({ model: modelName });
+                    const result = await model.generateContent(prompt);
+                    const content = result.response.text();
+
+                    // Find and parse JSON object
+                    const jsonMatch = content.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const parsed = JSON.parse(jsonMatch[0].replace(/,\s*\}/g, "}").replace(/,\s*\]/g, "]"));
+
+                        const recipe: Recipe = {
+                            title: parsed.title || "Delicious Recipe",
+                            ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+                            instructions: Array.isArray(parsed.instructions) ? parsed.instructions : [],
+                            health_score: typeof parsed.health_score === 'number' ? parsed.health_score : 7,
+                            health_reasoning: parsed.health_reasoning || "A balanced and nutritious dish.",
+                            magic_spice: parsed.magic_spice || "",
+                            magic_spice_reasoning: parsed.magic_spice_reasoning || "",
+                            youtube_urls: [
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " recipe guide")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent("how to cook " + parsed.title)}`
+                            ],
+                            vlog_urls: [
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " cooking vlog #Shorts")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " 60 second recipe")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " quick recipe guide")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " meal prep shorts")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " easy cooking vlog")}`
+                            ],
+                            image_urls: [],
+                        };
+
+                        if (recipe.title !== "Delicious Recipe" || recipe.ingredients.length > 0) {
+                            console.log(`Gemini ${modelName} Recipe Success!`);
+                            return { recipe };
+                        }
+                    }
+                } catch (geminiError: any) {
+                    console.error(`Gemini (${modelName}) Recipe error:`, geminiError.message || geminiError);
+                    // Continue to next Gemini model
+                }
+            }
+        }
+
+        // 2. OpenRouter Fallback
+
         // Verified working free text models (open source)
         const textModels = [
-            "nousresearch/deephermes-3-llama-3-8b-preview:free",
-            "nousresearch/hermes-3-llama-3.1-70b:free",
+            "google/gemini-2.0-flash-exp:free",
+            "meta-llama/llama-3.1-8b-instruct:free",
             "meta-llama/llama-3.3-70b-instruct:free",
-            "mistralai/mistral-nemo:free",
-            "deepseek/deepseek-r1:free",
-            "moonshotai/kimi-k2:free",
             "google/gemma-3-27b-it:free",
-            "qwen/qwen-2.5-vl-7b-instruct:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free"
+            "qwen/qwen-2.5-72b-instruct:free",
+            "mistralai/mistral-nemo:free",
+            "deepseek/deepseek-r1:free"
         ];
 
         for (const model of textModels) {
@@ -212,9 +329,7 @@ Create a recipe using these ingredients: ${ingredientList}`;
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "http://localhost:3000",
-                        "X-Title": "Scan-Essen"
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         model: model,
@@ -227,7 +342,11 @@ Create a recipe using these ingredients: ${ingredientList}`;
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, data.error.message);
+                    const errorMsg = data.error.message || "";
+                    console.log(`Model ${model} failed:`, errorMsg);
+                    if (errorMsg.includes("free-models-per-day") || errorMsg.includes("limit exceeded")) {
+                        return { recipe: null, error: "Daily limit reached for free models on OpenRouter (50 requests/day). Please try again tomorrow or add credits to your OpenRouter account to unlock 1000 free requests/day." };
+                    }
                     continue;
                 }
 
@@ -255,19 +374,32 @@ Create a recipe using these ingredients: ${ingredientList}`;
                             health_score: typeof parsed.health_score === 'number' ? parsed.health_score : 7,
                             health_reasoning: parsed.health_reasoning || "A balanced and nutritious dish.",
                             magic_spice: parsed.magic_spice || "",
-                            magic_spice_reasoning: parsed.magic_spice_reasoning || ""
+                            magic_spice_reasoning: parsed.magic_spice_reasoning || "",
+                            youtube_urls: [
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " recipe guide")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent("how to cook " + parsed.title)}`
+                            ],
+                            vlog_urls: [
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " cooking vlog #Shorts")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " 60 second recipe")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " quick recipe guide")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " meal prep shorts")}`,
+                                `https://www.youtube.com/results?search_query=${encodeURIComponent(parsed.title + " easy cooking vlog")}`
+                            ],
+                            image_urls: [],
                         };
 
                         // Validate recipe has at least a title
-                        if (!recipe.title || recipe.title === "Delicious Recipe" && recipe.ingredients.length === 0) {
+                        if (recipe && (!recipe.title || (recipe.title === "Delicious Recipe" && recipe.ingredients.length === 0))) {
                             console.log("Invalid recipe structure, trying next model...");
+                            recipe = null;
                             continue;
                         }
 
                         console.log("Parsed recipe successfully:", recipe.title);
                     }
                 } catch (parseError) {
-                    console.error("Failed to parse recipe:", parseError);
+                    console.error("DEBUG: Failed to parse recipe from model " + model + ". Content was:", content);
                     continue;
                 }
 
@@ -275,11 +407,11 @@ Create a recipe using these ingredients: ${ingredientList}`;
                     return { recipe };
                 }
             } catch (e) {
-                console.log(`Model ${model} error:`, e);
+                console.log(`DEBUG: Model ${model} network/fetch error:`, e);
             }
         }
 
-        return { recipe: null, error: "All models unavailable. Please try again." };
+        return { recipe: null, error: "AI temporary busy. Please try clicking 'Search' again in a few seconds." };
     } catch (error) {
         console.error("Recipe generation error:", error);
         return {
