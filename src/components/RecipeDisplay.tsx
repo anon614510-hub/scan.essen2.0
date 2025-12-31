@@ -1,8 +1,10 @@
 "use client";
 
 import { Recipe } from "@/lib/types";
-import { CheckCircle, AlertCircle, ChefHat, Sparkles, Star } from "lucide-react";
+import { CheckCircle, AlertCircle, ChefHat, Sparkles, Star, Loader2 } from "lucide-react";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
+import { searchYouTubeVideos, YouTubeVideo } from "@/app/actions";
 
 interface RecipeDisplayProps {
     recipe: Recipe;
@@ -10,25 +12,36 @@ interface RecipeDisplayProps {
 }
 
 export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
+    const [videos, setVideos] = useState<YouTubeVideo[]>([]);
+    const [loadingVideos, setLoadingVideos] = useState(true);
+    const [videoError, setVideoError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchVideos() {
+            setLoadingVideos(true);
+            setVideoError(null);
+            const query = recipe.youtube_search_query || recipe.title;
+            const result = await searchYouTubeVideos(query, 2);
+            if (result.error) {
+                setVideoError(result.error);
+            }
+            setVideos(result.videos);
+            setLoadingVideos(false);
+        }
+        fetchVideos();
+    }, [recipe]);
+
     const getHealthColor = (score: number) => {
         if (score >= 8) return "from-green-500/20 to-emerald-500/30 text-green-300 border-green-500/30";
         if (score >= 5) return "from-yellow-500/20 to-amber-500/30 text-yellow-300 border-yellow-500/30";
         return "from-red-500/20 to-rose-500/30 text-red-300 border-red-500/30";
     };
 
-    const getHealthBadge = (score: number) => {
-        if (score >= 8) return "bg-gradient-to-r from-green-500 to-emerald-500";
-        if (score >= 5) return "bg-gradient-to-r from-yellow-500 to-amber-500";
-        return "bg-gradient-to-r from-red-500 to-rose-500";
-    };
-
     return (
         <div className="bg-gradient-to-b from-gray-900/95 to-gray-950/95 rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-500 border border-white/10">
             {/* Header with gradient */}
             <div className="relative bg-gradient-to-r from-emerald-600/20 via-teal-500/20 to-cyan-500/20 p-6 border-b border-white/10">
-                {/* Background glow */}
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/5 via-transparent to-cyan-400/5" />
-
                 <div className="relative flex items-center gap-4">
                     <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/20">
                         <ChefHat className="w-7 h-7 text-white" />
@@ -98,10 +111,8 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
                 {/* Magic Spice */}
                 {recipe.magic_spice && (
                     <div className="relative bg-gradient-to-r from-amber-500/10 via-orange-500/15 to-rose-500/10 p-5 rounded-2xl border border-orange-500/20 overflow-hidden">
-                        {/* Sparkle decorations */}
                         <div className="absolute top-2 right-4 text-amber-400/30 animate-pulse">✦</div>
                         <div className="absolute bottom-3 right-8 text-orange-400/20 animate-pulse" style={{ animationDelay: '500ms' }}>✦</div>
-
                         <div className="relative">
                             <h3 className="text-sm font-bold uppercase text-amber-400 tracking-wider mb-3 flex items-center gap-2">
                                 <Star className="w-4 h-4 fill-amber-400" />
@@ -122,6 +133,49 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
                         <p className="leading-relaxed pt-1">{recipe.health_reasoning}</p>
                     </div>
                 )}
+
+                {/* Video Tutorials */}
+                <div>
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
+                        <span className="w-1.5 h-7 bg-gradient-to-b from-red-500 to-pink-600 rounded-full"></span>
+                        Video Tutorials
+                    </h3>
+
+                    {loadingVideos ? (
+                        <div className="flex items-center justify-center py-12 text-gray-400">
+                            <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                            Loading videos...
+                        </div>
+                    ) : videoError ? (
+                        <div className="text-center py-8 text-gray-500 bg-white/5 rounded-2xl border border-white/10">
+                            <p className="text-sm">Video tutorials not available</p>
+                            <p className="text-xs mt-1 opacity-60">{videoError}</p>
+                        </div>
+                    ) : videos.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500 bg-white/5 rounded-2xl border border-white/10">
+                            <p className="text-sm">No video tutorials found for this recipe</p>
+                        </div>
+                    ) : (
+                        <div className="grid sm:grid-cols-2 gap-4">
+                            {videos.map((video) => (
+                                <div
+                                    key={video.videoId}
+                                    className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-black"
+                                >
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        src={`https://www.youtube.com/embed/${video.videoId}`}
+                                        title={video.title}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 {/* Action Button */}
                 <button

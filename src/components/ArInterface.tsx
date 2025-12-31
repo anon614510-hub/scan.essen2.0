@@ -650,7 +650,7 @@ export default function ArInterface() {
                 {/* Bottom Navigation */}
                 <div className="bg-white rounded-t-3xl shadow-lg">
                     <div className="flex justify-around items-center py-3 px-4">
-                        <NavItem icon={<Camera className="w-5 h-5" />} label="Camera" active href="/" />
+                        <NavItem icon={<Camera className="w-5 h-5" />} label="Camera" active href="/" onClick={() => { }} />
 
                         {/* Separate Search Button */}
                         <NavItem icon={<Search className="w-5 h-5" />} label="Search" href="/search" />
@@ -691,7 +691,21 @@ export default function ArInterface() {
     );
 }
 
-function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: string; active?: boolean; href: string }) {
+function NavItem({ icon, label, active, href, onClick }: { icon: React.ReactNode; label: string; active?: boolean; href: string; onClick?: () => void }) {
+    if (onClick) {
+        return (
+            <button
+                onClick={onClick}
+                className={clsx(
+                    "flex flex-col items-center gap-1 p-2 rounded-xl",
+                    active ? "text-emerald-600" : "text-gray-500"
+                )}
+            >
+                {icon}
+                <span className="text-[10px] font-medium">{label}</span>
+            </button>
+        );
+    }
     return (
         <Link
             href={href}

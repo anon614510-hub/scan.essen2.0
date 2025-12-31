@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Search as SearchIcon, ArrowLeft, ChefHat, Clock, Flame, Sparkles, TrendingUp, Camera, BarChart2, HelpCircle, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -33,12 +34,23 @@ function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: 
 }
 
 export default function SearchPage() {
+    const router = useRouter();
     const [query, setQuery] = useState("");
     const [history, setHistory] = useState<{ recipe: Recipe; date: string }[]>([]);
     const [results, setResults] = useState<{ recipe: Recipe; date: string }[]>([]);
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedTools, setSelectedTools] = useState<string[]>([]);
+
+    // Handle back button to go to camera page
+    useEffect(() => {
+        const handlePopState = () => {
+            router.replace('/');
+        };
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [router]);
 
     const handleGenerate = async () => {
         if (!query.trim()) return;

@@ -2,6 +2,7 @@
 
 import { ArrowLeft, TrendingUp, Leaf, Clock, ChefHat, Apple, Trophy, Target, Zap, Camera, Search, BarChart2, HelpCircle } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
 import { getStatsAction, getHistoryAction } from "@/app/actions";
@@ -23,6 +24,7 @@ function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: 
 }
 
 export default function YourDataPage() {
+    const router = useRouter();
     const [stats, setStats] = useState({
         healthScore: 0,
         recipesCooked: 0,
@@ -33,6 +35,16 @@ export default function YourDataPage() {
     const [loading, setLoading] = useState(true);
     const [showHistoryModal, setShowHistoryModal] = useState(false);
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
+    // Handle back button to go to camera page
+    useEffect(() => {
+        const handlePopState = () => {
+            router.replace('/');
+        };
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [router]);
 
     // Load data
     useEffect(() => {

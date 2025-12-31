@@ -3,8 +3,52 @@
 import { Ingredient, Recipe } from "@/lib/types";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "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";
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "";
 
 console.log("DEBUG: API Key loaded:", process.env.OPENROUTER_API_KEY ? "YES (" + process.env.OPENROUTER_API_KEY.substring(0, 10) + "...)" : "NO (Using backup)");
+console.log("DEBUG: YouTube API Key loaded:", YOUTUBE_API_KEY ? "YES" : "NO");
+
+export interface YouTubeVideo {
+    videoId: string;
+    title: string;
+    thumbnail: string;
+}
+
+/**
+ * Search YouTube for videos matching a query
+ */
+export async function searchYouTubeVideos(query: string, maxResults: number = 2): Promise<{
+    videos: YouTubeVideo[];
+    error?: string;
+}> {
+    try {
+        if (!YOUTUBE_API_KEY) {
+            return { videos: [], error: "YouTube API key not configured" };
+        }
+
+        const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query + " recipe")}&type=video&maxResults=${maxResults}&key=${YOUTUBE_API_KEY}`
+        );
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error("YouTube API error:", data.error);
+            return { videos: [], error: data.error.message || "YouTube API error" };
+        }
+
+        const videos: YouTubeVideo[] = (data.items || []).map((item: any) => ({
+            videoId: item.id.videoId,
+            title: item.snippet.title,
+            thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url
+        }));
+
+        return { videos };
+    } catch (error) {
+        console.error("YouTube search error:", error);
+        return { videos: [], error: "Failed to search YouTube" };
+    }
+}
 
 
 /**
@@ -189,6 +233,7 @@ Respond with a JSON object containing:
 - health_reasoning: brief explanation of health score
 - magic_spice: one additional ingredient suggestion to elevate the dish
 - magic_spice_reasoning: why this spice would work
+- youtube_search_query: a generic, popular search term for this type of dish (e.g. "Chocolate Cake" instead of "My Special Chocolate Cake") to find video tutorials
 
 Respond with JSON only, no other text.
 
@@ -258,7 +303,8 @@ Create a recipe using these ingredients: ${ingredientList}`;
                             health_score: typeof parsed.health_score === 'number' ? parsed.health_score : 7,
                             health_reasoning: parsed.health_reasoning || "A balanced and nutritious dish.",
                             magic_spice: parsed.magic_spice || "",
-                            magic_spice_reasoning: parsed.magic_spice_reasoning || ""
+                            magic_spice_reasoning: parsed.magic_spice_reasoning || "",
+                            youtube_search_query: parsed.youtube_search_query || ""
                         };
 
                         // Validate recipe has at least a title
@@ -315,7 +361,9 @@ Respond with a JSON object containing:
 - health_score: 1-10 rating based on nutritional value
 - health_reasoning: brief explanation of health score
 - magic_spice: one additional ingredient suggestion to elevate the dish
+- magic_spice: one additional ingredient suggestion to elevate the dish
 - magic_spice_reasoning: why this spice would work
+- youtube_search_query: a generic, popular search term for this type of dish (e.g. "Chocolate Cake" instead of "My Special Chocolate Cake") to find video tutorials
 
 Respond with JSON only, no other text.`;
 
@@ -379,7 +427,8 @@ Respond with JSON only, no other text.`;
                             health_score: typeof parsed.health_score === 'number' ? parsed.health_score : 7,
                             health_reasoning: parsed.health_reasoning || "A balanced and nutritious dish.",
                             magic_spice: parsed.magic_spice || "",
-                            magic_spice_reasoning: parsed.magic_spice_reasoning || ""
+                            magic_spice_reasoning: parsed.magic_spice_reasoning || "",
+                            youtube_search_query: parsed.youtube_search_query || ""
                         };
 
                         if (recipe.ingredients.length > 0) {

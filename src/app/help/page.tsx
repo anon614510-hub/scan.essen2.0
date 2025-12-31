@@ -2,8 +2,9 @@
 
 import { ArrowLeft, Camera, Search, BarChart2, Scan, MessageCircle, Mail, ExternalLink, ChevronDown, Sparkles, HelpCircle, BookOpen } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const FAQ_ITEMS = [
     {
@@ -61,7 +62,18 @@ function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: 
 }
 
 export default function HelpPage() {
+    const router = useRouter();
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    // Handle back button to go to camera page
+    useEffect(() => {
+        const handlePopState = () => {
+            router.replace('/');
+        };
+        window.history.pushState(null, '', window.location.href);
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
+    }, [router]);
 
     return (
         <div className="min-h-[100dvh] bg-[#f5f0e8] text-gray-900 flex flex-col">
