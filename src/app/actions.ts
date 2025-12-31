@@ -4,6 +4,9 @@ import { Ingredient, Recipe } from "@/lib/types";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "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";
 
+console.log("DEBUG: API Key loaded:", process.env.OPENROUTER_API_KEY ? "YES (" + process.env.OPENROUTER_API_KEY.substring(0, 10) + "...)" : "NO (Using backup)");
+
+
 /**
  * Analyze a fridge image to detect ingredients using OpenRouter
  */
@@ -73,7 +76,7 @@ Respond with a JSON array of food items only, no other text. Example:
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, data.error.message);
+                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
                     continue;
                 }
 
@@ -227,7 +230,7 @@ Create a recipe using these ingredients: ${ingredientList}`;
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, data.error.message);
+                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
                     continue;
                 }
 
@@ -287,4 +290,149 @@ Create a recipe using these ingredients: ${ingredientList}`;
             error: error instanceof Error ? error.message : "Failed to generate recipe",
         };
     }
+
+}
+
+/**
+ * Generate a recipe by name (Generative Search)
+ */
+export async function generateRecipeByName(name: string, equipment: string[] = []): Promise<{
+    recipe: Recipe | null;
+    error?: string;
+}> {
+    try {
+        const equipmentText = equipment.length > 0
+            ? `\nIMPORTANT: You must STRICTLY use ONLY the following equipment: ${equipment.join(", ")}. Do NOT use an oven, stove, or other appliances unless strictly specified.`
+            : "";
+
+        const prompt = `You are a world-class chef. Create a detailed, healthy recipe for: "${name}".
+Assume the user has basic pantry staples.${equipmentText}
+
+Respond with a JSON object containing:
+- title: creative recipe name (based on "${name}")
+- ingredients: array of ingredient strings with quantities
+- instructions: array of step-by-step cooking instructions
+- health_score: 1-10 rating based on nutritional value
+- health_reasoning: brief explanation of health score
+- magic_spice: one additional ingredient suggestion to elevate the dish
+- magic_spice_reasoning: why this spice would work
+
+Respond with JSON only, no other text.`;
+
+        // Verified working free text models (open source)
+        const textModels = [
+            "nousresearch/deephermes-3-llama-3-8b-preview:free",
+            "nousresearch/hermes-3-llama-3.1-70b:free",
+            "meta-llama/llama-3.3-70b-instruct:free",
+            "mistralai/mistral-nemo:free",
+            "deepseek/deepseek-r1:free",
+            "moonshotai/kimi-k2:free",
+            "google/gemma-3-27b-it:free",
+            "qwen/qwen-2.5-vl-7b-instruct:free",
+            "google/gemma-3-12b-it:free",
+            "google/gemma-3-4b-it:free"
+        ];
+
+        for (const model of textModels) {
+            try {
+                console.log(`Trying text model for generation: ${model}`);
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Content-Type": "application/json",
+                        "HTTP-Referer": "http://localhost:3000",
+                        "X-Title": "Scan-Essen"
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: "user", content: prompt }
+                        ]
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                    continue;
+                }
+
+                const content = data.choices?.[0]?.message?.content || "{}";
+                console.log(`Model ${model} SUCCESS! Content:`, content.substring(0, 200));
+
+                let recipe: Recipe | null = null;
+                try {
+                    // Try to find a JSON object - use greedy match
+                    const jsonMatch = content.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        let jsonStr = jsonMatch[0];
+                        jsonStr = jsonStr.replace(/,\s*\}/g, "}");
+                        jsonStr = jsonStr.replace(/,\s*\]/g, "]");
+                        const parsed = JSON.parse(jsonStr);
+
+                        recipe = {
+                            title: parsed.title || name,
+                            ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : [],
+                            instructions: Array.isArray(parsed.instructions) ? parsed.instructions : [],
+                            health_score: typeof parsed.health_score === 'number' ? parsed.health_score : 7,
+                            health_reasoning: parsed.health_reasoning || "A balanced and nutritious dish.",
+                            magic_spice: parsed.magic_spice || "",
+                            magic_spice_reasoning: parsed.magic_spice_reasoning || ""
+                        };
+
+                        if (recipe.ingredients.length > 0) {
+                            return { recipe };
+                        }
+                    }
+                } catch (parseError) {
+                    console.error("Failed to parse recipe:", parseError);
+                    continue;
+                }
+            } catch (e) {
+                console.log(`Model ${model} error:`, e);
+            }
+        }
+
+        return { recipe: null, error: "Failed to generate recipe. Please try again." };
+
+    } catch (error) {
+        console.error("Recipe generation error:", error);
+        return { recipe: null, error: "Failed to generate recipe" };
+    }
+}
+
+// --- Persistence Actions ---
+import {
+    saveIngredients,
+    getIngredients,
+    saveRecipeToHistory,
+    getHistory,
+    getUserStats,
+    clearIngredients
+} from "@/lib/store";
+
+export async function saveIngredientsAction(ingredients: Ingredient[]) {
+    await saveIngredients(ingredients);
+}
+
+export async function getIngredientsAction() {
+    return await getIngredients();
+}
+
+export async function clearIngredientsAction() {
+    await clearIngredients();
+}
+
+export async function saveRecipeAction(recipe: Recipe) {
+    await saveRecipeToHistory(recipe);
+}
+
+export async function getHistoryAction() {
+    return await getHistory();
+}
+
+export async function getStatsAction() {
+    return await getUserStats();
 }

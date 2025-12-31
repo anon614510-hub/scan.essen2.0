@@ -1,0 +1,316 @@
+{
+  "ingredients": [
+    {
+      "name": "Hand sanitizer",
+      "quantity": "1 bottle",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Unopened and sealed"
+    },
+    {
+      "name": "Dark Fantasy Chocolate",
+      "quantity": "1 bar",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Appears to be a sealed product"
+    },
+    {
+      "name": "Beverage (likely water or juice)",
+      "quantity": "1 bottle",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Cannot determine expiry status from image."
+    },
+    {
+      "name": "Chocolate",
+      "quantity": "1 piece",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed package, appears new"
+    },
+    {
+      "name": "Nescafé Classic Instant Coffee",
+      "quantity": "1 packet",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed package"
+    },
+    {
+      "name": "Chips",
+      "quantity": "1 packet",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed package"
+    },
+    {
+      "name": "Tehete Meetha Chips",
+      "quantity": "1 packet",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed package"
+    }
+  ],
+  "recipes": [
+    {
+      "recipe": {
+        "title": "Spicy Sweet Chip Crunch Bites",
+        "ingredients": [
+          "1 packet Tehete Meetha Chips",
+          "1/2 cup plain Greek yogurt",
+          "1/4 cup chopped fresh cilantro",
+          "1/2 teaspoon ground cumin",
+          "1/4 teaspoon cayenne pepper",
+          "Salt to taste"
+        ],
+        "instructions": [
+          "Crush the Tehete Meetha Chips into fine crumbs and set aside.",
+          "In a bowl, mix together the yogurt, cilantro, cumin, cayenne pepper, and salt.",
+          "Add the crushed chips to the yogurt mixture and stir until well combined.",
+          "Cover and refrigerate for at least 30 minutes to allow the flavors to meld.",
+          "Serve chilled, garnished with additional cilantro if desired."
+        ],
+        "health_score": 6,
+        "health_reasoning": "The dish is relatively healthy due to the presence of yogurt and cilantro, but the Tehete Meetha Chips add a significant amount of sodium and calories.",
+        "magic_spice": "Garam masala",
+        "magic_spice_reasoning": "Adding a pinch of garam masala would enhance the Indian-inspired flavors of the dish and complement the sweetness of the chips, while also adding a warm, aromatic depth to the overall taste experience."
+      },
+      "date": "2025-12-31T15:01:46.715Z"
+    },
+    {
+      "recipe": {
+        "title": "Crunchy Chip Crusted Chicken Bites",
+        "ingredients": [
+          "1 packet of Chips",
+          "1 lb boneless, skinless chicken breast",
+          "1/2 cup grated cheddar cheese",
+          "1/4 cup chopped fresh parsley",
+          "1 egg",
+          "1/2 cup panko breadcrumbs",
+          "1/2 tsp salt",
+          "1/4 tsp black pepper"
+        ],
+        "instructions": [
+          "Preheat oven to 400°F (200°C).",
+          "Crush the chips in a blender or food processor until they become fine crumbs.",
+          "In a bowl, mix together the crushed chips, panko breadcrumbs, grated cheese, chopped parsley, salt, and pepper.",
+          "Cut the chicken breast into bite-sized pieces.",
+          "Dip each chicken piece into the beaten egg and then coat with the chip mixture, pressing gently to adhere.",
+          "Place the coated chicken pieces on a baking sheet lined with parchment paper.",
+          "Bake for 20-25 minutes or until the chicken is cooked through and the crust is golden brown.",
+          "Serve hot and enjoy!"
+        ],
+        "health_score": 6,
+        "health_reasoning": "This dish is relatively healthy due to the presence of chicken and parsley, but the use of chips and cheese adds calories and fat.",
+        "magic_spice": "Smoked Paprika",
+        "magic_spice_reasoning": "Adding smoked paprika would give the dish a smoky depth and enhance the crunch of the chip crust, balancing out the richness of the cheese."
+      },
+      "date": "2025-12-31T15:00:50.989Z"
+    },
+    {
+      "recipe": {
+        "title": "Rajma Chawal Delight",
+        "ingredients": [
+          "1 cup kidney beans (rajma), soaked overnight and drained",
+          "2 cups water",
+          "1 tablespoon olive oil",
+          "1 small onion, chopped",
+          "2 cloves garlic, minced",
+          "1 small ginger, grated",
+          "1 teaspoon ground cumin",
+          "1 teaspoon ground coriander",
+          "1/2 teaspoon turmeric powder",
+          "1/2 teaspoon red chili powder",
+          "1/2 teaspoon garam masala powder",
+          "1/2 teaspoon salt",
+          "1/4 teaspoon black pepper",
+          "2 cups cooked basmati rice (chawal)",
+          "2 tablespoons chopped fresh cilantro"
+        ],
+        "instructions": [
+          "In the Microwave, heat 1 cup of water for 2 minutes to boil. Add the soaked and drained kidney beans, cover, and cook for 10-12 minutes or until the beans are tender.",
+          "In the Air Fryer, heat the olive oil at 300°F (150°C) for 2 minutes. Add the chopped onion and cook for 3-4 minutes or until translucent.",
+          "Add the minced garlic and grated ginger to the Air Fryer and cook for another minute, stirring constantly.",
+          "Add the cumin, coriander, turmeric, red chili powder, garam masala, salt, and black pepper to the Air Fryer. Cook for 1 minute, stirring constantly.",
+          "Add the cooked kidney beans to the Air Fryer and stir well to combine with the spice mixture.",
+          "In the Blender, blend 1/4 cup of the cooked kidney beans with 1/4 cup water to make a smooth paste.",
+          "Add the blended paste back to the Air Fryer and stir well to combine.",
+          "Serve the rajma mixture over cooked basmati rice (chawal) and garnish with chopped cilantro."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in fiber, protein, and complex carbohydrates, making it a nutritious and filling meal. The kidney beans provide a good source of plant-based protein, while the basmati rice adds complex carbohydrates.",
+        "magic_spice": "Smoked paprika",
+        "magic_spice_reasoning": "The smoky flavor of smoked paprika would complement the earthy flavor of the kidney beans and add a depth of flavor to the dish."
+      },
+      "date": "2025-12-30T20:35:44.368Z"
+    },
+    {
+      "recipe": {
+        "title": "Mocha Coffee Crusted Rubbed Steak",
+        "ingredients": [
+          "1 packet Nescafé Classic Instant Coffee",
+          "1.5 lbs flank steak",
+          "2 tbsp brown sugar",
+          "1 tsp ground cinnamon",
+          "1 tsp smoked paprika",
+          "1/2 tsp salt",
+          "1/4 tsp black pepper",
+          "2 tbsp olive oil"
+        ],
+        "instructions": [
+          "Preheat the oven to 400°F (200°C).",
+          "In a small bowl, mix together the instant coffee, brown sugar, cinnamon, smoked paprika, salt, and pepper.",
+          "Rub the spice mixture all over the flank steak, making sure to coat it evenly.",
+          "Heat the olive oil in an oven-safe skillet over high heat. Sear the steak for 2-3 minutes per side.",
+          "Transfer the skillet to the preheated oven and cook for 15-20 minutes, or until the steak reaches your desired level of doneness.",
+          "Let the steak rest for 5 minutes before slicing and serving."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in protein and moderate in fat, with a good balance of antioxidants from the coffee and spices. However, the added sugar and potential high sodium content from the spices bring the score down.",
+        "magic_spice": "cayenne pepper",
+        "magic_spice_reasoning": "The smoky heat from the cayenne pepper would complement the earthy flavors of the coffee and spices, adding a depth and complexity to the dish."
+      },
+      "date": "2025-12-30T20:06:03.994Z"
+    },
+    {
+      "recipe": {
+        "title": "Decadent Chocolate Fondue",
+        "ingredients": [
+          "1 piece of high-quality dark chocolate (at least 70% cocoa)",
+          "1/2 cup heavy cream",
+          "1 tablespoon unsalted butter",
+          "1 teaspoon vanilla extract",
+          "Fresh fruit (strawberries, bananas, grapes) for dipping"
+        ],
+        "instructions": [
+          "In a double boiler or a heatproof bowl set over a pot of simmering water, melt the chocolate, stirring occasionally.",
+          "Once the chocolate is melted, remove from heat and stir in the heavy cream, butter, and vanilla extract until smooth.",
+          "Arrange fresh fruit on a platter or individual plates.",
+          "Serve the warm chocolate fondue with the fresh fruit for dipping."
+        ],
+        "health_score": 6,
+        "health_reasoning": "Dark chocolate contains antioxidants and flavonoids, but the addition of heavy cream and butter increases the calorie and fat content.",
+        "magic_spice": "Cayenne pepper",
+        "magic_spice_reasoning": "A pinch of cayenne pepper adds a surprising kick and depth to the richness of the chocolate, balancing the flavors and enhancing the overall experience."
+      },
+      "date": "2025-12-30T19:31:21.613Z"
+    },
+    {
+      "recipe": {
+        "title": "Vitality Pasta Primavera",
+        "ingredients": [
+          "8 oz whole wheat spaghetti",
+          "2 cups mixed spring vegetables (bell peppers, carrots, broccoli, onions)",
+          "2 cloves garlic, minced",
+          "1/4 cup olive oil",
+          "2 tbsp freshly squeezed lemon juice",
+          "1 tsp dried basil",
+          "1 tsp dried oregano",
+          "Salt and pepper to taste",
+          "1/4 cup grated Parmesan cheese",
+          "1/4 cup chopped fresh parsley"
+        ],
+        "instructions": [
+          "Bring a large pot of salted water to a boil and cook the spaghetti according to package instructions until al dente.",
+          "In a large skillet, heat the olive oil over medium-high heat.",
+          "Add the minced garlic and cook for 1-2 minutes until fragrant.",
+          "Add the mixed spring vegetables and cook for 3-4 minutes until tender, stirring occasionally.",
+          "Stir in the lemon juice, dried basil, and dried oregano. Season with salt and pepper to taste.",
+          "Drain the cooked spaghetti and add it to the skillet with the vegetables, tossing to combine.",
+          "Transfer the pasta to a serving dish and top with grated Parmesan cheese and chopped parsley."
+        ],
+        "health_score": 9,
+        "health_reasoning": "This recipe is high in fiber, vitamins, and minerals from the whole wheat spaghetti and mixed spring vegetables, while being low in calories and saturated fat.",
+        "magic_spice": "Red pepper flakes",
+        "magic_spice_reasoning": "Adding a pinch of red pepper flakes will introduce a subtle spicy kick, enhancing the flavors of the dish while also providing an antioxidant boost from the capsaicin in the peppers."
+      },
+      "date": "2025-12-30T19:04:49.465Z"
+    },
+    {
+      "recipe": {
+        "title": "Bhature Bliss: Whole Wheat Chole Bhature Delight",
+        "ingredients": [
+          "1 cup whole wheat flour (atta)",
+          "1/2 teaspoon salt",
+          "1/4 teaspoon baking powder",
+          "1/4 teaspoon baking soda",
+          "1/4 cup yogurt",
+          "1 tablespoon ghee or oil",
+          "1 large onion, diced",
+          "2 cloves garlic, minced",
+          "1 large tomato, diced",
+          "1 teaspoon cumin seeds",
+          "1 teaspoon coriander powder",
+          "1/2 teaspoon garam masala powder",
+          "1/2 teaspoon amchur powder",
+          "1/4 teaspoon cayenne pepper (optional)",
+          "1 can chickpeas (14 oz), drained and rinsed",
+          "2 cups water",
+          "Fresh cilantro, for garnish"
+        ],
+        "instructions": [
+          "In a large mixing bowl, combine whole wheat flour, salt, baking powder, and baking soda.",
+          "Add yogurt and ghee or oil, and mix until a soft dough forms.",
+          "Knead the dough for 5-7 minutes, until smooth and elastic.",
+          "Cover the dough with a damp cloth and let it rest for 30 minutes.",
+          "Divide the dough into 6-8 equal portions and roll each into a ball.",
+          "Roll out each ball into a thin circle, about 6-7 inches in diameter.",
+          "Heat a non-stick skillet or tava over medium heat and cook the bhature for 1-2 minutes on each side, until puffed and golden brown.",
+          "In a large pan, heat oil over medium heat and add cumin seeds.",
+          "Add diced onion and cook until translucent, about 3-4 minutes.",
+          "Add minced garlic and cook for another minute.",
+          "Add diced tomato, coriander powder, garam masala powder, amchur powder, and cayenne pepper (if using), and cook for 5-7 minutes, until the mixture is thick and the oil separates.",
+          "Add chickpeas and water to the pan, and bring to a boil.",
+          "Reduce the heat to low and simmer for 10-15 minutes, until the chole thickens and the flavors meld together.",
+          "Serve the chole with bhature, garnished with fresh cilantro."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe uses whole wheat flour, which provides more fiber and nutrients compared to refined flour. The dish is also high in protein and fiber from the chickpeas, and low in calories and fat. However, the use of ghee or oil and the potential for high sodium content from the chickpeas and spices reduce the health score.",
+        "magic_spice": "Kasoori methi (dried fenugreek leaves)",
+        "magic_spice_reasoning": "Kasoori methi adds a unique, slightly bitter flavor and aroma to the dish, which complements the sweetness of the tomatoes and the earthiness of the chickpeas. It also provides a boost of antioxidants and other nutrients, making it a great addition to this already nutritious recipe."
+      },
+      "date": "2025-12-30T19:00:41.966Z"
+    },
+    {
+      "recipe": {
+        "title": "Dark Fantasy Chocolate Lava Cake",
+        "ingredients": [
+          "1 piece Dark Fantasy Chocolate",
+          "1/2 cup all-purpose flour",
+          "1/2 cup granulated sugar",
+          "1/4 cup unsweetened cocoa powder",
+          "1/2 teaspoon salt",
+          "1/4 teaspoon baking powder",
+          "1/2 cup whole milk",
+          "1 large egg",
+          "1 teaspoon vanilla extract"
+        ],
+        "instructions": [
+          "Preheat oven to 425°F (220°C).",
+          "In a medium bowl, whisk together flour, sugar, cocoa powder, salt, and baking powder.",
+          "In a separate bowl, whisk together milk, egg, and vanilla extract.",
+          "Add the wet ingredients to the dry ingredients and stir until just combined.",
+          "Melt the Dark Fantasy Chocolate and fold it into the batter.",
+          "Pour the batter into 2 (6-ounce) ramekins or small cups.",
+          "Bake for 12-15 minutes or until the edges are set and the centers are still slightly jiggly.",
+          "Let cool in the ramekins for 1 minute, then invert onto plates and serve immediately."
+        ],
+        "health_score": 6,
+        "health_reasoning": "This recipe is high in sugar and calories, but the dark chocolate provides some antioxidants and flavonoids.",
+        "magic_spice": "Fleur de Sel",
+        "magic_spice_reasoning": "A pinch of Fleur de Sel can enhance the flavor of the dark chocolate and add a touch of sophistication to the dish."
+      },
+      "date": "2025-12-30T18:48:57.207Z"
+    },
+    {
+      "recipe": {
+        "title": "None",
+        "ingredients": [],
+        "instructions": [],
+        "health_score": 0,
+        "health_reasoning": "Hand sanitizer is not edible and cannot be used as an ingredient in cooking. It is a disinfectant meant for cleaning hands and is not safe for human consumption.",
+        "magic_spice": "None",
+        "magic_spice_reasoning": "No spice or ingredient can make hand sanitizer safe or suitable for cooking."
+      },
+      "date": "2025-12-30T17:47:23.444Z"
+    }
+  ],
+  "stats": {
+    "healthScore": 6.6,
+    "recipesCooked": 9,
+    "ingredientsSaved": 10,
+    "wasteSaved": 70
+  }
+}

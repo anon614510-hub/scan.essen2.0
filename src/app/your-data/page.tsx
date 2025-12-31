@@ -4,36 +4,8 @@ import { ArrowLeft, TrendingUp, Leaf, Clock, ChefHat, Apple, Trophy, Target, Zap
 import Link from "next/link";
 import clsx from "clsx";
 import { useState, useEffect } from "react";
-
-// Mock data for demonstration
-const STATS = {
-    healthScore: 8,
-    recipesCooked: 14,
-    ingredientsSaved: 23,
-    wasteSaved: 32,
-};
-
-const WEEKLY_DATA = [
-    { day: "Mon", score: 7 },
-    { day: "Tue", score: 8 },
-    { day: "Wed", score: 6 },
-    { day: "Thu", score: 9 },
-    { day: "Fri", score: 8 },
-    { day: "Sat", score: 7 },
-    { day: "Sun", score: 8 },
-];
-
-const RECENT_MEALS = [
-    { name: "Spinach Omelette", score: 9, time: "Today, 8:30 AM", emoji: "🍳" },
-    { name: "Grilled Chicken Salad", score: 8, time: "Yesterday, 1:00 PM", emoji: "🥗" },
-    { name: "Pasta Primavera", score: 7, time: "Yesterday, 7:30 PM", emoji: "🍝" },
-];
-
-const ACHIEVEMENTS = [
-    { title: "Waste Warrior", desc: "Saved 20+ ingredients", icon: "🏆", unlocked: true },
-    { title: "Health Hero", desc: "Average score 8+", icon: "💪", unlocked: true },
-    { title: "Chef Master", desc: "Cook 50 recipes", icon: "👨‍🍳", unlocked: false },
-];
+import { getStatsAction, getHistoryAction } from "@/app/actions";
+import { Recipe } from "@/lib/types";
 
 function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: string; active?: boolean; href: string }) {
     return (
@@ -51,34 +23,94 @@ function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: 
 }
 
 export default function YourDataPage() {
-    const [animatedValues, setAnimatedValues] = useState({
-        health: 0,
-        recipes: 0,
-        saved: 0,
-        waste: 0
+    const [stats, setStats] = useState({
+        healthScore: 0,
+        recipesCooked: 0,
+        ingredientsSaved: 0,
+        wasteSaved: 0
+    });
+    const [history, setHistory] = useState<{ recipe: Recipe; date: string }[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
+    const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+
+    // Load data
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const [userStats, userHistory] = await Promise.all([
+                    getStatsAction(),
+                    getHistoryAction()
+                ]);
+                setStats(userStats);
+                setHistory(userHistory);
+            } catch (error) {
+                console.error("Failed to load data:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadData();
+    }, []);
+
+    // Derived Display Data
+    const recentMeals = history.slice(0, 3).map(item => {
+        const date = new Date(item.date);
+        // Simple relative time format
+        const timeStr = date.toLocaleDateString() === new Date().toLocaleDateString()
+            ? `Today, ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+            : date.toLocaleDateString();
+
+        return {
+            name: item.recipe.title,
+            score: item.recipe.health_score,
+            time: timeStr,
+            emoji: "🍽️" // Could imply from ingredients but default is fine
+        };
     });
 
-    // Animate stats on mount
+    const achievements = [
+        { title: "Waste Warrior", desc: "Saved 20+ ingredients", icon: "🏆", unlocked: stats.ingredientsSaved >= 20 },
+        { title: "Health Hero", desc: "Health score 8+", icon: "💪", unlocked: stats.healthScore >= 8 },
+        { title: "Chef Master", desc: "Cook 5 recipes", icon: "👨‍🍳", unlocked: stats.recipesCooked >= 5 },
+    ];
+
+    // Animated values for visual flair
+    const [animatedStats, setAnimatedStats] = useState(stats);
+
     useEffect(() => {
+        if (loading) return;
+
         const duration = 1000;
         const steps = 30;
         const interval = duration / steps;
-
         let step = 0;
+
         const timer = setInterval(() => {
             step++;
             const progress = step / steps;
-            setAnimatedValues({
-                health: Math.round(STATS.healthScore * progress),
-                recipes: Math.round(STATS.recipesCooked * progress),
-                saved: Math.round(STATS.ingredientsSaved * progress),
-                waste: Math.round(STATS.wasteSaved * progress),
+            setAnimatedStats({
+                healthScore: Math.round(stats.healthScore * progress),
+                recipesCooked: Math.round(stats.recipesCooked * progress),
+                ingredientsSaved: Math.round(stats.ingredientsSaved * progress),
+                wasteSaved: Math.round(stats.wasteSaved * progress),
             });
             if (step >= steps) clearInterval(timer);
         }, interval);
 
         return () => clearInterval(timer);
-    }, []);
+    }, [loading, stats]);
+
+    // Mock weekly data based on current score (visual only)
+    const weeklyData = [
+        { day: "Mon", score: Math.max(5, stats.healthScore - 1) },
+        { day: "Tue", score: Math.min(10, stats.healthScore + 1) },
+        { day: "Wed", score: stats.healthScore },
+        { day: "Thu", score: Math.max(6, stats.healthScore - 2) },
+        { day: "Fri", score: stats.healthScore },
+        { day: "Sat", score: Math.min(10, stats.healthScore + 1) },
+        { day: "Sun", score: stats.healthScore },
+    ];
 
     return (
         <div className="min-h-[100dvh] bg-[#f5f0e8] text-gray-900 flex flex-col">
@@ -97,28 +129,29 @@ export default function YourDataPage() {
                 <div className="grid grid-cols-2 gap-3">
                     <StatCard
                         title="Health Score"
-                        value={`${animatedValues.health}/10`}
+                        value={`${animatedStats.healthScore}/10`}
                         icon={<TrendingUp className="w-5 h-5" />}
                         color="bg-[#d4f0e8]"
                         iconColor="text-emerald-600"
                     />
                     <StatCard
                         title="Recipes Cooked"
-                        value={animatedValues.recipes}
+                        value={animatedStats.recipesCooked}
                         icon={<ChefHat className="w-5 h-5" />}
                         color="bg-[#fce8d8]"
                         iconColor="text-orange-600"
+                        onClick={() => setShowHistoryModal(true)}
                     />
                     <StatCard
                         title="Ingredients Saved"
-                        value={animatedValues.saved}
+                        value={animatedStats.ingredientsSaved}
                         icon={<Apple className="w-5 h-5" />}
                         color="bg-[#d8e8f0]"
                         iconColor="text-blue-600"
                     />
                     <StatCard
                         title="Waste Reduced"
-                        value={`${animatedValues.waste}%`}
+                        value={`${animatedStats.wasteSaved}%`}
                         icon={<Leaf className="w-5 h-5" />}
                         color="bg-[#e8f5e0]"
                         iconColor="text-lime-600"
@@ -129,10 +162,10 @@ export default function YourDataPage() {
                 <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
                     <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
                         <Target className="w-4 h-4" />
-                        Weekly Health Score
+                        Weekly Health Trends
                     </h2>
                     <div className="flex items-end justify-between gap-2 h-36">
-                        {WEEKLY_DATA.map((day, i) => (
+                        {weeklyData.map((day, i) => (
                             <div key={i} className="flex flex-col items-center gap-2 flex-1 group">
                                 <div className="text-xs font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
                                     {day.score}
@@ -163,32 +196,38 @@ export default function YourDataPage() {
                         <Zap className="w-4 h-4" />
                         Recent Meals
                     </h2>
-                    <div className="space-y-3">
-                        {RECENT_MEALS.map((meal, i) => (
-                            <div
-                                key={i}
-                                className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
-                            >
-                                <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl">
-                                    {meal.emoji}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="font-bold text-gray-800">{meal.name}</div>
-                                    <div className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
-                                        <Clock className="w-3 h-3" /> {meal.time}
+                    {recentMeals.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500 bg-white rounded-2xl border border-dashed border-gray-300">
+                            No meals cooked yet. Start cooking! 🍳
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {recentMeals.map((meal, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+                                >
+                                    <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl">
+                                        {meal.emoji}
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-bold text-gray-800">{meal.name}</div>
+                                        <div className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
+                                            <Clock className="w-3 h-3" /> {meal.time}
+                                        </div>
+                                    </div>
+                                    <div className={clsx(
+                                        "px-3 py-1.5 rounded-xl text-sm font-black",
+                                        meal.score >= 8
+                                            ? "bg-[#d4f0e8] text-emerald-700"
+                                            : "bg-[#fce8d8] text-amber-700"
+                                    )}>
+                                        {meal.score}/10
                                     </div>
                                 </div>
-                                <div className={clsx(
-                                    "px-3 py-1.5 rounded-xl text-sm font-black",
-                                    meal.score >= 8
-                                        ? "bg-[#d4f0e8] text-emerald-700"
-                                        : "bg-[#fce8d8] text-amber-700"
-                                )}>
-                                    {meal.score}/10
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Achievements */}
@@ -198,7 +237,7 @@ export default function YourDataPage() {
                         Achievements
                     </h2>
                     <div className="grid grid-cols-3 gap-3">
-                        {ACHIEVEMENTS.map((achievement, i) => (
+                        {achievements.map((achievement, i) => (
                             <div
                                 key={i}
                                 className={clsx(
@@ -217,22 +256,109 @@ export default function YourDataPage() {
                 </div>
 
                 {/* Main Achievement Banner */}
-                <div className="bg-gradient-to-r from-[#e8d8f0] via-[#f0d8e8] to-[#fce8d8] rounded-2xl p-5 border border-purple-200/50 shadow-sm relative overflow-hidden">
-                    {/* Decorative elements */}
-                    <div className="absolute top-2 right-6 text-purple-400/30 text-2xl animate-pulse">✦</div>
-                    <div className="absolute bottom-3 right-12 text-pink-400/20 text-lg animate-pulse" style={{ animationDelay: '300ms' }}>✦</div>
+                {achievements.some(a => a.unlocked) && (
+                    <div className="bg-gradient-to-r from-[#e8d8f0] via-[#f0d8e8] to-[#fce8d8] rounded-2xl p-5 border border-purple-200/50 shadow-sm relative overflow-hidden">
+                        {/* Decorative elements */}
+                        <div className="absolute top-2 right-6 text-purple-400/30 text-2xl animate-pulse">✦</div>
+                        <div className="absolute bottom-3 right-12 text-pink-400/20 text-lg animate-pulse" style={{ animationDelay: '300ms' }}>✦</div>
 
-                    <div className="relative flex items-center gap-4">
-                        <span className="text-5xl">🏆</span>
-                        <div>
-                            <div className="font-black text-xl text-gray-800">Waste Warrior!</div>
-                            <div className="text-sm text-gray-600 mt-1">
-                                You've saved <span className="font-bold text-emerald-600">{STATS.ingredientsSaved}</span> ingredients this week
+                        <div className="relative flex items-center gap-4">
+                            <span className="text-5xl">🏆</span>
+                            <div>
+                                <div className="font-black text-xl text-gray-800">Keep it up!</div>
+                                <div className="text-sm text-gray-600 mt-1">
+                                    You've saved <span className="font-bold text-emerald-600">{stats.ingredientsSaved}</span> ingredients total!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* History Modal */}
+            {showHistoryModal && (
+                <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-lg h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+                        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white z-10">
+                            <h2 className="text-lg font-bold flex items-center gap-2">
+                                <ChefHat className="w-5 h-5 text-orange-500" />
+                                Cooking History
+                            </h2>
+                            <button
+                                onClick={() => setShowHistoryModal(false)}
+                                className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            {history.length === 0 ? (
+                                <div className="text-center py-10 text-gray-500">
+                                    No recipes cooked yet!
+                                </div>
+                            ) : (
+                                history.map((item, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setSelectedRecipe(item.recipe)}
+                                        className="flex items-center gap-4 w-full p-4 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 text-left shrink-0"
+                                    >
+                                        <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-2xl">
+                                            🍽️
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="font-bold text-gray-800 truncate">{item.recipe.title}</div>
+                                            <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                                                <Clock className="w-3 h-3" />
+                                                {new Date(item.date).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Recipe Details Modal (reused from logic, simplified import?) */}
+            {/* Using a simplified inline display or separate component if imported */}
+            {/* Note: User usually wants to see the recipe. I'll add a simple view logic or just show titles for now as requested "list". But actually opening the recipe is better. */}
+            {/* Wait, I can't import RecipeDisplay easily if not exported? it is default exported from components/RecipeDisplay.tsx. Need to check imports. */}
+            {/* Checking imports... No RecipeDisplay imported. I need to add it or just show JSON? No, I should add RecipeDisplay. */}
+            {/* For now, let's just show the history list. If they click a recipe, I need to display it. */}
+            {/* Adding basic Recipe Popup support. */}
+            {selectedRecipe && (
+                <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6">
+                        <button
+                            onClick={() => setSelectedRecipe(null)}
+                            className="absolute top-4 right-4 p-2 bg-gray-100 rounded-full z-10"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                        </button>
+                        <h2 className="text-2xl font-black mb-4 pr-10">{selectedRecipe.title}</h2>
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="font-bold text-sm text-gray-500 uppercase">Ingredients</h3>
+                                <ul className="mt-2 space-y-1">
+                                    {selectedRecipe.ingredients.map((ing, i) => (
+                                        <li key={i} className="text-sm border-b border-gray-50 py-1">{ing}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-sm text-gray-500 uppercase">Instructions</h3>
+                                <ol className="mt-2 space-y-3 list-decimal list-inside">
+                                    {selectedRecipe.instructions.map((step, i) => (
+                                        <li key={i} className="text-sm leading-relaxed">{step}</li>
+                                    ))}
+                                </ol>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Bottom Navigation */}
             <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-lg border-t border-gray-100 z-30">
@@ -248,18 +374,24 @@ export default function YourDataPage() {
     );
 }
 
-function StatCard({ title, value, icon, color, iconColor }: {
+function StatCard({ title, value, icon, color, iconColor, onClick }: {
     title: string;
     value: string | number;
     icon: React.ReactNode;
     color: string;
     iconColor: string;
+    onClick?: () => void;
 }) {
     return (
-        <div className={clsx(
-            "p-4 rounded-2xl border border-gray-100 shadow-sm transition-all duration-200 hover:shadow-md cursor-default",
-            color
-        )}>
+        <button
+            onClick={onClick}
+            disabled={!onClick}
+            className={clsx(
+                "p-4 rounded-2xl border border-gray-100 shadow-sm transition-all duration-200 hover:shadow-md text-left w-full relative overflow-hidden",
+                color,
+                onClick ? "cursor-pointer active:scale-95" : "cursor-default"
+            )}
+        >
             <div className={clsx(
                 "w-11 h-11 rounded-xl flex items-center justify-center bg-white/60 mb-3 shadow-sm",
                 iconColor
@@ -268,6 +400,6 @@ function StatCard({ title, value, icon, color, iconColor }: {
             </div>
             <div className="text-3xl font-black text-gray-800">{value}</div>
             <div className="text-xs text-gray-600 font-medium mt-1">{title}</div>
-        </div>
+        </button>
     );
 }

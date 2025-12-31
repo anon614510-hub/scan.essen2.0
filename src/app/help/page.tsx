@@ -31,6 +31,11 @@ const FAQ_ITEMS = [
         answer: "We track ingredients you use in recipes that might otherwise expire. This helps reduce food waste and save money!",
         icon: "🌱"
     },
+    {
+        question: "Is my data saved?",
+        answer: "Yes! Your ingredients, recipes, and stats are saved automatically to your device, so you won't lose them when you reload.",
+        icon: "💾"
+    },
 ];
 
 const FEATURES = [

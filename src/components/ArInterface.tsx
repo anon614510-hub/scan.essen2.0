@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff } from "lucide-react";
+import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff, ChefHat } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
-import { analyzeImage, generateRecipe } from "@/app/actions";
+import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
 import { Ingredient, Recipe } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
+
+
 
 // Emoji mapping for common ingredients and food items
 const INGREDIENT_EMOJIS: Record<string, string> = {
@@ -107,10 +109,27 @@ export default function ArInterface() {
     const [isListening, setIsListening] = useState(false);
     const [voiceTranscript, setVoiceTranscript] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const [recipesGenerated, setRecipesGenerated] = useState(0);
+    const [stats, setStats] = useState({
+        recipesGenerated: 0,
+        healthScore: 8,
+        wasteSaved: 32
+    });
+
+    // Load Stats on Mount
+    useEffect(() => {
+        getStatsAction().then(data => {
+            setStats({
+                recipesGenerated: data.recipesCooked,
+                healthScore: data.healthScore,
+                wasteSaved: data.wasteSaved
+            });
+        }).catch(err => console.error("Failed to load stats:", err));
+    }, []);
     const [showScanSuccess, setShowScanSuccess] = useState(false);
     const [newlyScannedItems, setNewlyScannedItems] = useState<string[]>([]);
     const [scanStatus, setScanStatus] = useState<string>("");
+
+
 
     // Voice Recognition Setup
     const startListening = useCallback(() => {
@@ -160,7 +179,11 @@ export default function ArInterface() {
             if (result.error) setError(result.error);
             else if (result.recipe) {
                 setRecipe(result.recipe);
-                setRecipesGenerated(prev => prev + 1);
+                // Optimistic update
+                setStats(prev => ({
+                    ...prev,
+                    recipesGenerated: prev.recipesGenerated + 1
+                }));
             }
         } catch { setError("Failed to generate recipe."); }
         finally { setIsGenerating(false); }
@@ -298,6 +321,10 @@ export default function ArInterface() {
                 // Trigger cool scan animation
                 setNewlyScannedItems(validIngredients.map((i: Ingredient) => i.name));
                 setShowScanSuccess(true);
+
+                // Persist ingredients
+                saveIngredientsAction(validIngredients).catch(err => console.error("Failed to save ingredients:", err));
+
                 setTimeout(() => {
                     setShowScanSuccess(false);
                     setNewlyScannedItems([]);
@@ -331,7 +358,13 @@ export default function ArInterface() {
             } else if (result.recipe) {
                 console.log("Recipe received:", result.recipe.title);
                 setRecipe(result.recipe);
-                setRecipesGenerated(prev => prev + 1);
+                setStats(prev => ({
+                    ...prev,
+                    recipesGenerated: prev.recipesGenerated + 1
+                }));
+
+                // Persist recipe
+                saveRecipeAction(result.recipe).catch(err => console.error("Failed to save recipe:", err));
             } else {
                 console.log("No recipe in result");
                 setError("No recipe generated. Please try again.");
@@ -349,8 +382,7 @@ export default function ArInterface() {
         setVoiceTranscript("");
     };
 
-    const healthScore = recipe?.health_score || 8;
-    const wasteSaved = ingredients.length > 0 ? Math.min(95, 20 + ingredients.length * 8) : 32;
+
 
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#f5f0e8] text-gray-900 font-sans">
@@ -533,6 +565,24 @@ export default function ArInterface() {
                 </div>
             )}
 
+            {/* Generate Recipe Button (Appears when ingredients exist) */}
+            {ingredients.length > 0 && !recipe && (
+                <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-40 animate-bounce-in">
+                    <button
+                        onClick={handleGenerateRecipe}
+                        disabled={isGenerating}
+                        className="flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-full shadow-2xl transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ring-4 ring-white/30"
+                    >
+                        {isGenerating ? (
+                            <Loader2 className="w-6 h-6 animate-spin" />
+                        ) : (
+                            <ChefHat className="w-6 h-6" />
+                        )}
+                        <span className="font-bold text-lg">Cook {ingredients.length} Items!</span>
+                    </button>
+                </div>
+            )}
+
             {/* Bottom Panel */}
             <div className="absolute bottom-0 w-full z-20">
 
@@ -575,24 +625,24 @@ export default function ArInterface() {
                 <div className="flex gap-2 mx-4 mb-3">
                     <Link href="/your-data" className="flex-1 bg-[#d4f0e8] rounded-2xl p-3 shadow-md">
                         <p className="text-[10px] text-gray-600 font-medium">Health Score</p>
-                        <p className="text-2xl font-black text-gray-800">{healthScore}/10</p>
+                        <p className="text-2xl font-black text-gray-800">{stats.healthScore}/10</p>
                         <div className="flex gap-0.5 mt-1">
                             {[...Array(10)].map((_, i) => (
                                 <div key={i} className={clsx(
                                     "h-1 flex-1 rounded-full",
-                                    i < healthScore ? "bg-emerald-500" : "bg-gray-300"
+                                    i < stats.healthScore ? "bg-emerald-500" : "bg-gray-300"
                                 )} />
                             ))}
                         </div>
                     </Link>
                     <div className="flex-1 bg-[#e8f5e0] rounded-2xl p-3 shadow-md">
                         <p className="text-[10px] text-gray-600 font-medium">Food Waste</p>
-                        <p className="text-2xl font-black text-gray-800">{wasteSaved}%</p>
+                        <p className="text-2xl font-black text-gray-800">{stats.wasteSaved}%</p>
                         <p className="text-[10px] text-emerald-600 font-medium mt-1">Saved this week 🌱</p>
                     </div>
                     <div className="flex-1 bg-[#fce8d8] rounded-2xl p-3 shadow-md">
                         <p className="text-[10px] text-gray-600 font-medium">Recipes</p>
-                        <p className="text-2xl font-black text-gray-800">{recipesGenerated}</p>
+                        <p className="text-2xl font-black text-gray-800">{stats.recipesGenerated}</p>
                         <p className="text-[10px] text-orange-600 font-medium mt-1">Generated 😊</p>
                     </div>
                 </div>
@@ -603,23 +653,7 @@ export default function ArInterface() {
                         <NavItem icon={<Camera className="w-5 h-5" />} label="Camera" active href="/" />
 
                         {/* Separate Search Button */}
-                        <button
-                            onClick={handleGenerateRecipe}
-                            disabled={isGenerating || ingredients.length === 0}
-                            className={clsx(
-                                "flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-200",
-                                ingredients.length > 0
-                                    ? "text-orange-500 hover:bg-orange-50"
-                                    : "text-gray-400"
-                            )}
-                        >
-                            {isGenerating ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : (
-                                <Search className="w-5 h-5" />
-                            )}
-                            <span className="text-[10px] font-medium">Search</span>
-                        </button>
+                        <NavItem icon={<Search className="w-5 h-5" />} label="Search" href="/search" />
 
                         {/* Center Capture Button */}
                         <button
