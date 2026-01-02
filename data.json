@@ -101,9 +101,177 @@
       "quantity": "1 packet",
       "expiry_status": "fresh",
       "expiry_reasoning": "Not visibly开封，且看不清过期日期"
+    },
+    {
+      "name": "Smartphone",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Electronic device"
+    },
+    {
+      "name": "Tomato",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Strawberry",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Orange",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Lemon",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Apple",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Banana",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Avocado",
+      "quantity": "multiple",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Displayed as an image on screen"
+    },
+    {
+      "name": "Energy Drink",
+      "quantity": "1 can",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Visible in the image, sealed container"
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "ElectriFry Chicken Wings",
+        "ingredients": [
+          "1 can Energy Drink",
+          "2 pounds chicken wings",
+          "1/4 cup soy sauce",
+          "1/4 cup honey",
+          "2 tablespoons rice vinegar",
+          "1 teaspoon garlic powder",
+          "1/2 teaspoon onion powder",
+          "1/4 teaspoon black pepper"
+        ],
+        "instructions": [
+          "Preheat oven to 400°F (200°C).",
+          "In a large bowl, whisk together Energy Drink, soy sauce, honey, rice vinegar, garlic powder, onion powder, and black pepper.",
+          "Add the chicken wings to the bowl and toss to coat evenly.",
+          "Line a baking sheet with aluminum foil and spray with cooking spray. Arrange the chicken wings on the baking sheet.",
+          "Bake for 30-35 minutes or until cooked through.",
+          "Increase oven temperature to broil. Broil for an additional 5-7 minutes or until caramelized."
+        ],
+        "health_score": 6,
+        "health_reasoning": "The dish is high in protein from the chicken, but the Energy Drink adds a significant amount of sugar and caffeine. Moderation is key.",
+        "magic_spice": "Sesame seeds",
+        "magic_spice_reasoning": "The nutty flavor of sesame seeds pairs well with the sweet and savory glaze, adding depth and texture to the dish.",
+        "youtube_search_query": "Honey Glazed Chicken Wings"
+      },
+      "date": "2026-01-02T16:02:23.226Z"
+    },
+    {
+      "recipe": {
+        "title": "Fruit and Avocado Salsa with Grilled Chicken",
+        "ingredients": [
+          "4 Tomatoes, diced",
+          "2 Strawberries, hulled and sliced",
+          "2 Oranges, peeled and segmented",
+          "1 Lemon, juiced",
+          "1 Apple, diced",
+          "2 Bananas, sliced",
+          "2 Avocados, diced",
+          "1 lb Grilled Chicken, diced",
+          "1/4 cup Red Onion, diced",
+          "1 Jalapeño Pepper, seeded and finely chopped",
+          "Cilantro, chopped (optional)"
+        ],
+        "instructions": [
+          "In a large bowl, combine diced tomatoes, sliced strawberries, orange segments, diced apple, and chopped red onion.",
+          "In a small bowl, whisk together lemon juice and a pinch of salt.",
+          "Pour the lemon mixture over the tomato mixture and toss to coat.",
+          "Gently fold in diced avocado and chopped jalapeño pepper.",
+          "Stir in grilled chicken and season with salt to taste.",
+          "Cover and refrigerate for at least 30 minutes to allow flavors to meld.",
+          "Just before serving, garnish with chopped cilantro if desired.",
+          "Serve with tortilla chips, on top of grilled fish or chicken, or as a side dish."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in vitamins A and C, potassium, and healthy fats from the avocado, with a good balance of protein from the chicken.",
+        "magic_spice": "Cumin",
+        "magic_spice_reasoning": "Cumin adds a warm, earthy flavor that complements the sweetness of the fruit and the savory flavor of the chicken, while also enhancing the digestive benefits of the dish.",
+        "youtube_search_query": "Fresh Fruit Salsa Recipe"
+      },
+      "date": "2026-01-02T09:03:44.879Z"
+    },
+    {
+      "recipe": {
+        "title": "Error 404: Smartphone Soup",
+        "ingredients": [],
+        "instructions": [
+          "Unfortunately, a smartphone is not edible and cannot be used as an ingredient in cooking.",
+          "Please provide a list of edible ingredients to generate a recipe."
+        ],
+        "health_score": 0,
+        "health_reasoning": "A smartphone is an inedible electronic device and has no nutritional value.",
+        "magic_spice": "None",
+        "magic_spice_reasoning": "No spice can make a non-edible item edible.",
+        "youtube_search_query": "Kitchen Gadgets"
+      },
+      "date": "2026-01-02T09:01:31.353Z"
+    },
+    {
+      "recipe": {
+        "title": "Blazing Sunset Paneer Tikka",
+        "ingredients": [
+          "250g paneer, cut into 1-inch cubes",
+          "1/2 cup plain Greek yogurt",
+          "2 tbsp lemon juice",
+          "1 tsp garam masala",
+          "1 tsp cumin powder",
+          "1/2 tsp coriander powder",
+          "1/2 tsp cayenne pepper (optional)",
+          "1/4 tsp salt",
+          "1/4 tsp black pepper",
+          "2 cloves garlic, minced",
+          "1-inch ginger, grated",
+          "2 tbsp olive oil",
+          "10-12 bamboo skewers, soaked in water",
+          "Chopped cilantro for garnish"
+        ],
+        "instructions": [
+          "In a large bowl, whisk together yogurt, lemon juice, garam masala, cumin powder, coriander powder, cayenne pepper (if using), salt, and black pepper.",
+          "Add the minced garlic and grated ginger to the bowl and mix well.",
+          "Add the paneer cubes to the marinade and mix until they are well coated. Cover and refrigerate for at least 30 minutes or up to 2 hours.",
+          "Preheat a grill or grill pan to medium-high heat. Thread 2-3 paneer cubes onto each skewer.",
+          "Brush the grill or grill pan with olive oil to prevent sticking. Grill the paneer skewers for 3-4 minutes per side, or until they are golden brown and slightly charred.",
+          "Serve the paneer tikka hot, garnished with chopped cilantro and your choice of sides, such as basmati rice or naan bread."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in protein from the paneer and Greek yogurt, and low in calories and fat. The spices and herbs add flavor without adding salt or sugar.",
+        "magic_spice": "Smoked paprika",
+        "magic_spice_reasoning": "The smoky flavor of the paprika complements the charred flavor from the grill and adds a depth of flavor to the dish.",
+        "youtube_search_query": "Paneer Tikka Recipe"
+      },
+      "date": "2026-01-01T16:32:12.390Z"
+    },
     {
       "recipe": {
         "title": "Sunrise Indori Poha Delight",
@@ -948,9 +1116,9 @@
     }
   ],
   "stats": {
-    "healthScore": 7.9,
-    "recipesCooked": 27,
-    "ingredientsSaved": 24,
+    "healthScore": 6.2,
+    "recipesCooked": 31,
+    "ingredientsSaved": 33,
     "wasteSaved": 95
   }
 }

@@ -3,6 +3,7 @@
     "short_name": "FridgeForager",
     "start_url": "/",
     "display": "standalone",
+    "orientation": "portrait",
     "background_color": "#F9FAFB",
     "theme_color": "#34D399",
     "icons": [
@@ -11,5 +12,9 @@
             "sizes": "192x192 512x512",
             "type": "image/png"
         }
+    ],
+    "permissions": [
+        "camera",
+        "microphone"
     ]
 }

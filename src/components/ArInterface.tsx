@@ -206,33 +206,69 @@ export default function ArInterface() {
         setIsCameraLoading(true);
 
         try {
+            // Check if camera API is available
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error("Camera API not available");
+                // Check if it's likely a secure context issue
+                if (!window.isSecureContext) {
+                    throw new Error("Camera requires a secure connection (HTTPS). Please access via HTTPS or use localhost.");
+                }
+                throw new Error("Camera not supported. Please use a modern browser.");
             }
 
             let mediaStream: MediaStream | null = null;
 
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
-                    audio: false
-                });
-            } catch {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+            // Try to get camera with multiple fallback options
+            const constraints = [
+                // First try: environment camera with ideal settings
+                { video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false },
+                // Second try: environment camera with exact mode (for mobile)
+                { video: { facingMode: "environment" }, audio: false },
+                // Third try: any camera
+                { video: true, audio: false },
+            ];
+
+            for (const constraint of constraints) {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia(constraint);
+                    if (mediaStream) break;
+                } catch (err) {
+                    console.log("Camera constraint failed:", constraint, err);
+                    continue;
+                }
             }
 
-            if (!mediaStream) throw new Error("Could not access camera");
+            if (!mediaStream) {
+                throw new Error("Could not access camera. Please check permissions in your browser settings.");
+            }
 
             streamRef.current = mediaStream;
 
             if (videoRef.current) {
                 videoRef.current.srcObject = mediaStream;
-                await new Promise<void>((resolve) => {
+                // Wait for video metadata to load with a longer timeout for mobile
+                await new Promise<void>((resolve, reject) => {
                     const video = videoRef.current!;
-                    video.onloadedmetadata = () => resolve();
-                    setTimeout(resolve, 3000);
+                    const timeout = setTimeout(() => {
+                        resolve(); // Resolve anyway after timeout
+                    }, 5000);
+
+                    video.onloadedmetadata = () => {
+                        clearTimeout(timeout);
+                        resolve();
+                    };
+
+                    video.onerror = () => {
+                        clearTimeout(timeout);
+                        reject(new Error("Video element error"));
+                    };
                 });
-                try { await videoRef.current.play(); } catch { }
+
+                // Try to play with user gesture handling for mobile
+                try {
+                    await videoRef.current.play();
+                } catch (playError) {
+                    console.log("Autoplay failed, user interaction may be needed:", playError);
+                }
             }
 
             setIsCameraActive(true);
@@ -241,7 +277,17 @@ export default function ArInterface() {
         } catch (err: unknown) {
             setIsCameraLoading(false);
             const msg = err instanceof Error ? err.message : String(err);
-            setError(`Camera error: ${msg}`);
+
+            // Provide more helpful error messages for common issues
+            if (msg.includes("NotAllowed") || msg.includes("Permission denied")) {
+                setError("Camera permission denied. Please tap the camera icon in your browser's address bar and allow camera access, then try again.");
+            } else if (msg.includes("NotFound") || msg.includes("DevicesNotFound")) {
+                setError("No camera found on this device.");
+            } else if (msg.includes("NotReadable") || msg.includes("TrackStartError")) {
+                setError("Camera is in use by another app. Please close other apps using the camera and try again.");
+            } else {
+                setError(`Camera error: ${msg}`);
+            }
             return false;
         }
     }, [isCameraActive]);
