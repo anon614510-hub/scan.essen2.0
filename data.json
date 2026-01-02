@@ -155,9 +155,178 @@
       "quantity": "1 can",
       "expiry_status": "fresh",
       "expiry_reasoning": "Visible in the image, sealed container"
+    },
+    {
+      "name": "Chocolate Peanut Butter Crunchy",
+      "quantity": "1 tub",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "No visible expiration date provided"
+    },
+    {
+      "name": "Shirt",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Clothing item"
+    },
+    {
+      "name": "Pants",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Clothing item"
+    },
+    {
+      "name": "Sweater",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Clothing item"
+    },
+    {
+      "name": "Glasses",
+      "quantity": "1 pair",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Personal item"
+    },
+    {
+      "name": "Headphone",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Personal item"
+    },
+    {
+      "name": "Laptop",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Electronic device"
+    },
+    {
+      "name": "Bread",
+      "quantity": "1 slice",
+      "expiry_status": "soon",
+      "expiry_reasoning": "Appears to be exposed and slightly stale"
+    },
+    {
+      "name": "Fork",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Utensil, no expiry date"
+    },
+    {
+      "name": "Unknown food residue",
+      "quantity": "small amount",
+      "expiry_status": "soon",
+      "expiry_reasoning": "Residue on floor, likely expired"
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "Trash to Treasure Fork Revival",
+        "ingredients": [
+          "1 fork",
+          "small amount of unknown food residue"
+        ],
+        "instructions": [
+          "Dispose of the unknown food residue in a responsible manner.",
+          "Wash the fork thoroughly with soap and warm water.",
+          "Sanitize the fork by soaking it in a mixture of equal parts water and white vinegar for 10 minutes.",
+          "Rinse the fork with clean water and let it air dry."
+        ],
+        "health_score": 10,
+        "health_reasoning": "This recipe prioritizes cleanliness and sanitation, ensuring the fork is safe for future use.",
+        "magic_spice": "Lemon juice",
+        "magic_spice_reasoning": "A squeeze of fresh lemon juice can help remove any remaining residue and add a touch of citrus flavor to the cleaned fork, symbolizing a fresh start.",
+        "youtube_search_query": "Fork Cleaning and Sanitizing"
+      },
+      "date": "2026-01-02T17:08:14.149Z"
+    },
+    {
+      "recipe": {
+        "title": "Cheesy Toast Delight",
+        "ingredients": [
+          "1 slice of Bread",
+          "1 tablespoon of Butter",
+          "1/4 cup of Shredded Cheese (such as Cheddar or Mozzarella)",
+          "Salt and Pepper to taste"
+        ],
+        "instructions": [
+          "Preheat a non-stick pan or griddle over medium heat",
+          "Butter one side of the bread slice",
+          "Place the bread, buttered side down, in the pan",
+          "Sprinkle shredded cheese over the top of the bread",
+          "Cook for 2-3 minutes or until the bread is golden brown and the cheese is melted",
+          "Flip the bread over and cook for an additional 1-2 minutes",
+          "Season with salt and pepper to taste",
+          "Serve hot and enjoy"
+        ],
+        "health_score": 6,
+        "health_reasoning": "This recipe is relatively high in calories and fat due to the butter and cheese, but it can be a satisfying and filling snack in moderation",
+        "magic_spice": "Paprika",
+        "magic_spice_reasoning": "Adding a sprinkle of paprika can add a smoky, savory flavor to the dish and complement the cheese nicely",
+        "youtube_search_query": "Grilled Cheese Toast"
+      },
+      "date": "2026-01-02T17:07:45.983Z"
+    },
+    {
+      "recipe": {
+        "title": "None",
+        "ingredients": [],
+        "instructions": [],
+        "health_score": 0,
+        "health_reasoning": "No edible ingredients provided",
+        "magic_spice": "None",
+        "magic_spice_reasoning": "No dish can be created with the given ingredients",
+        "youtube_search_query": "None"
+      },
+      "date": "2026-01-02T17:07:07.693Z"
+    },
+    {
+      "recipe": {
+        "title": "Peanut Butter Crunch Chocolate Bark",
+        "ingredients": [
+          "1 tub Chocolate Peanut Butter Crunchy"
+        ],
+        "instructions": [
+          "Line a baking sheet with parchment paper.",
+          "Spoon the Chocolate Peanut Butter Crunchy onto the prepared baking sheet.",
+          "Spread it into a thin layer, about 1/4 inch thick.",
+          "Refrigerate for at least 30 minutes to set.",
+          "Break into pieces and serve."
+        ],
+        "health_score": 6,
+        "health_reasoning": "High in calories and sugar, but contains peanuts which are a good source of protein and healthy fats.",
+        "magic_spice": "Sea Salt",
+        "magic_spice_reasoning": "Adds a touch of savory flavor and texture to balance out the sweetness of the chocolate and peanut butter.",
+        "youtube_search_query": "Chocolate Bark Recipe"
+      },
+      "date": "2026-01-02T17:04:35.108Z"
+    },
+    {
+      "recipe": {
+        "title": "Mawa Bliss: Cardamom-Infused Indian Milk Fudge",
+        "ingredients": [
+          "2 cups milk",
+          "1/2 cup grated paneer or ricotta cheese",
+          "1/4 cup ghee or unsalted butter",
+          "1/2 cup granulated sugar",
+          "1/4 teaspoon ground cardamom",
+          "1/4 teaspoon salt",
+          "1/2 teaspoon chopped pistachios or almonds (optional)"
+        ],
+        "instructions": [
+          "In a large saucepan, combine milk, paneer or ricotta cheese, and ghee or butter. Heat over medium heat, stirring occasionally, until the mixture thickens and reduces slightly, about 20-25 minutes.",
+          "Add sugar, cardamom, and salt to the saucepan. Cook, stirring constantly, until the sugar dissolves and the mixture thickens further, about 10-12 minutes.",
+          "Remove the saucepan from the heat and let it cool slightly. Stir in chopped nuts, if using.",
+          "Pour the mixture onto a greased plate or tray. Let it cool and set at room temperature, about 30-40 minutes.",
+          "Once set, cut the mawa into desired shapes and serve."
+        ],
+        "health_score": 7,
+        "health_reasoning": "Mawa is a nutrient-rich dessert, high in protein and calcium from the milk and paneer. However, it is also high in sugar and calories, which reduces its overall health score.",
+        "magic_spice": "Rose water",
+        "magic_spice_reasoning": "Rose water adds a unique, fragrant flavor to mawa, balancing the richness of the dish and enhancing its aroma.",
+        "youtube_search_query": "Indian Mawa Recipe"
+      },
+      "date": "2026-01-02T16:56:21.458Z"
+    },
     {
       "recipe": {
         "title": "ElectriFry Chicken Wings",
@@ -1116,9 +1285,9 @@
     }
   ],
   "stats": {
-    "healthScore": 6.2,
-    "recipesCooked": 31,
-    "ingredientsSaved": 33,
+    "healthScore": 6.4,
+    "recipesCooked": 36,
+    "ingredientsSaved": 43,
     "wasteSaved": 95
   }
 }
