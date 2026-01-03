@@ -54,12 +54,15 @@ export async function searchYouTubeVideos(query: string, maxResults: number = 2)
 /**
  * Analyze a fridge image to detect ingredients using OpenRouter
  */
-export async function analyzeImage(base64Image: string): Promise<{
+export async function analyzeImage(base64Image: string, locale: string = "en"): Promise<{
     ingredients: Ingredient[];
     error?: string;
 }> {
     try {
+        const languageName = locale === 'es' ? 'Spanish' : 'English';
         const prompt = `You are a food ingredient detection assistant. Analyze the image and identify ALL visible food items and edible ingredients.
+        
+IMPORTANT: Return the "expiry_reasoning" in ${languageName}.
                     
 This includes:
 - Fresh produce (fruits, vegetables)
@@ -193,7 +196,8 @@ export async function generateRecipe(
     ingredients: Ingredient[],
     cuisine: string = "Any",
     equipment: string[] = [],
-    preferences: string = ""
+    preferences: string = "",
+    locale: string = "en"
 ): Promise<{
     recipe: Recipe | null;
     error?: string;
@@ -219,7 +223,9 @@ export async function generateRecipe(
             ? `User preferences/request: "${preferences}". Make sure to incorporate this into the recipe.`
             : "";
 
+        const languageName = locale === 'es' ? 'Spanish' : 'English';
         const prompt = `You are a creative AI chef. Generate a delicious, practical recipe using the provided ingredients.
+IMPORTANT: Respond entirely in ${languageName} (titles, instructions, reasoning).
 
 ${cuisineNote}
 ${equipmentNote}
@@ -342,7 +348,7 @@ Create a recipe using these ingredients: ${ingredientList}`;
 /**
  * Generate a recipe by name (Generative Search)
  */
-export async function generateRecipeByName(name: string, equipment: string[] = []): Promise<{
+export async function generateRecipeByName(name: string, equipment: string[] = [], locale: string = "en"): Promise<{
     recipe: Recipe | null;
     error?: string;
 }> {
@@ -351,7 +357,9 @@ export async function generateRecipeByName(name: string, equipment: string[] = [
             ? `\nIMPORTANT: You must STRICTLY use ONLY the following equipment: ${equipment.join(", ")}. Do NOT use an oven, stove, or other appliances unless strictly specified.`
             : "";
 
+        const languageName = locale === 'es' ? 'Spanish' : 'English';
         const prompt = `You are a world-class chef. Create a detailed, healthy recipe for: "${name}".
+IMPORTANT: Respond entirely in ${languageName}.
 Assume the user has basic pantry staples.${equipmentText}
 
 Respond with a JSON object containing:

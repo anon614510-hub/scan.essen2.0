@@ -1,0 +1,40 @@
+{
+    "HomePage": {
+        "title": "¿Qué hay en tu refri?",
+        "subtitle": "Generador de recetas con IA basado en tus ingredientes",
+        "scanButton": "Escanear Refri",
+        "searchButton": "Buscar Recetas",
+        "uploadTip": "Tip: fotos más claras dan mejores resultados"
+    },
+    "Navigation": {
+        "home": "Inicio",
+        "data": "Tus Datos",
+        "help": "Ayuda"
+    },
+    "Recipe": {
+        "generating": "Generando receta...",
+        "ingredients": "Ingredientes",
+        "instructions": "Instrucciones"
+    },
+    "ArInterface": {
+        "tapToEnable": "Toca para activar cámara",
+        "starting": "Iniciando cámara...",
+        "scanHint": "Escanea comida - snacks, bebidas, frutas o paquetes",
+        "analyzing": "Analizando...",
+        "analyzingAI": "IA Analizando...",
+        "detecting": "Detectando ingredientes...",
+        "processing": "Procesando imagen...",
+        "foundItems": "¡Encontré {count} cosas!",
+        "noFood": "¡No detecté comida! Intenta de nuevo.",
+        "cookButton": "¡Cocinar {count} cosas!",
+        "instamart": "Instamart",
+        "instamartSub": "Pide ingredientes faltantes",
+        "searchPlaceholder": "Buscar recetas...",
+        "listening": "Escuchando...",
+        "healthScore": "Salud",
+        "foodWaste": "Desperdicio",
+        "recipes": "Recetas",
+        "saved": "Ahorrado esta semana",
+        "generated": "Generadas"
+    }
+}

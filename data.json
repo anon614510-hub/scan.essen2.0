@@ -215,9 +215,277 @@
       "quantity": "small amount",
       "expiry_status": "soon",
       "expiry_reasoning": "Residue on floor, likely expired"
+    },
+    {
+      "name": "Packaged Nutritional Product",
+      "quantity": "1 container",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed packaging with visible nutritional label"
+    },
+    {
+      "name": "Peanut Butter (Chocolate Flavor)",
+      "quantity": "1 container",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Sealed container with no visible signs of spoilage or damage"
+    },
+    {
+      "name": "Nut",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Nut is being held and does not have packaging that shows expirations."
+    },
+    {
+      "name": "Nuts",
+      "quantity": "handful",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Unopened package, no visible expiration date"
+    },
+    {
+      "name": "Peanut",
+      "quantity": "1 piece",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "No visible expiration date, sealed in shell and intact."
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "Sunrise Oven Omelette",
+        "ingredients": [
+          "4 large eggs",
+          "1/2 cup mixed bell peppers, diced",
+          "1/2 cup onions, diced",
+          "1/2 cup mushrooms, sliced",
+          "1/2 cup shredded low-fat cheddar cheese",
+          "1 tablespoon olive oil",
+          "Salt and pepper to taste"
+        ],
+        "instructions": [
+          "Preheat the oven to 375°F (190°C).",
+          "In a large bowl, whisk the eggs and season with salt and pepper.",
+          "In a separate bowl, mix the diced bell peppers, onions, and mushrooms.",
+          "Grease a 9-inch oven-safe skillet with olive oil and add the vegetable mixture.",
+          "Pour the whisked eggs over the vegetables.",
+          "Sprinkle the shredded cheese on top.",
+          "Bake for 20-25 minutes or until the eggs are set and the cheese is melted and golden brown.",
+          "Remove from the oven and let it cool for a few minutes before slicing and serving."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in protein, fiber, and healthy fats, making it a nutritious start to the day. The vegetables add vitamins and minerals, while the low-fat cheese keeps the calorie count in check.",
+        "magic_spice": "Smoked Paprika",
+        "magic_spice_reasoning": "Smoked paprika adds a smoky depth to the dish, complementing the earthy flavors of the mushrooms and the sweetness of the bell peppers, elevating the overall flavor profile.",
+        "youtube_search_query": "Oven Baked Omelette"
+      },
+      "date": "2026-01-03T11:09:46.534Z"
+    },
+    {
+      "recipe": {
+        "title": "Tropical Sunrise Smoothie Bowl",
+        "ingredients": [
+          "2 cups frozen pineapple",
+          "1 cup frozen mango",
+          "1 banana",
+          "1/2 cup unsweetened almond milk",
+          "1/2 cup plain Greek yogurt",
+          "1 tablespoon honey",
+          "1/2 teaspoon vanilla extract",
+          "1/4 teaspoon salt",
+          "1/2 cup granola",
+          "1/2 cup sliced fresh kiwi",
+          "1/4 cup sliced fresh strawberries",
+          "1/4 cup shredded coconut"
+        ],
+        "instructions": [
+          "Add the frozen pineapple, mango, banana, almond milk, Greek yogurt, honey, vanilla extract, and salt to a blender.",
+          "Blend the mixture on high speed until smooth and creamy.",
+          "Pour the smoothie into a bowl.",
+          "Top the smoothie with granola, sliced kiwi, sliced strawberries, and shredded coconut.",
+          "Serve immediately and enjoy!"
+        ],
+        "health_score": 9,
+        "health_reasoning": "This smoothie bowl is high in fruits, fiber, and protein, making it a nutritious and filling breakfast or snack option.",
+        "magic_spice": "Turmeric",
+        "magic_spice_reasoning": "The anti-inflammatory properties of turmeric would complement the natural sweetness of the fruits and add an extra layer of depth to the dish.",
+        "youtube_search_query": "Smoothie Bowl Recipe"
+      },
+      "date": "2026-01-03T09:02:58.353Z"
+    },
+    {
+      "recipe": {
+        "title": "Nutty Energy Bites",
+        "ingredients": [
+          "1 Nut (any type, e.g., almond, walnut, pecan)",
+          "2 tablespoons Honey",
+          "1 tablespoon Peanut butter",
+          "1/2 cup Rolled oats",
+          "1/4 cup Chia seeds",
+          "1/4 cup Dried fruits (cranberries, raisins, or cherries)"
+        ],
+        "instructions": [
+          "Grind the nut into a coarse powder using a food processor or blender.",
+          "In a large mixing bowl, combine the ground nut, honey, peanut butter, oats, chia seeds, and dried fruits.",
+          "Mix all the ingredients until they form a sticky dough.",
+          "Use your hands to shape the dough into small energy balls, about 1-inch in diameter.",
+          "Place the energy balls on a baking sheet lined with parchment paper and refrigerate for at least 30 minutes to set.",
+          "Store the energy balls in an airtight container in the refrigerator for up to a week."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in healthy fats, protein, and fiber from the nuts, oats, and chia seeds, making it a nutritious snack.",
+        "magic_spice": "Cinnamon",
+        "magic_spice_reasoning": "Adding a pinch of cinnamon can enhance the flavor and provide additional antioxidant benefits.",
+        "youtube_search_query": "No Bake Energy Balls"
+      },
+      "date": "2026-01-03T09:02:39.854Z"
+    },
+    {
+      "recipe": {
+        "title": "Thai Peanut Bites",
+        "ingredients": [
+          "1 piece of peanut",
+          "1 tablespoon of honey",
+          "1/4 teaspoon of salt",
+          "1/4 teaspoon of soy sauce",
+          "1/4 teaspoon of grated ginger",
+          "1 tablespoon of oats"
+        ],
+        "instructions": [
+          "Preheat oven to 350°F (180°C).",
+          "Grind the peanut into a fine powder using a food processor.",
+          "In a bowl, mix together the peanut powder, honey, salt, soy sauce, and ginger until well combined.",
+          "Roll the mixture into small balls, about 1 inch in diameter.",
+          "Roll each ball in oats to coat.",
+          "Place the coated balls on a baking sheet lined with parchment paper.",
+          "Bake for 10-12 minutes, or until lightly toasted."
+        ],
+        "health_score": 8,
+        "health_reasoning": "High in healthy fats and protein from the peanut, and low in added sugars.",
+        "magic_spice": "Sesame seeds",
+        "magic_spice_reasoning": "Adds a nutty flavor and crunchy texture that complements the peanut well.",
+        "youtube_search_query": "Peanut Energy Balls"
+      },
+      "date": "2026-01-03T08:09:34.789Z"
+    },
+    {
+      "recipe": {
+        "title": "Candied Nut Delight",
+        "ingredients": [
+          "1 Nut",
+          "1 tablespoon Honey",
+          "1/2 teaspoon Salt",
+          "1/4 teaspoon Vanilla extract"
+        ],
+        "instructions": [
+          "Preheat the oven to 350°F (180°C).",
+          "In a bowl, mix together honey, salt, and vanilla extract.",
+          "Add the nut to the bowl and coat it evenly with the honey mixture.",
+          "Place the coated nut on a baking sheet lined with parchment paper.",
+          "Bake for 10-12 minutes or until the nut is caramelized and fragrant.",
+          "Let it cool before serving."
+        ],
+        "health_score": 6,
+        "health_reasoning": "The recipe has a moderate health score due to the high sugar content from the honey, but the nut provides a good amount of healthy fats and protein.",
+        "magic_spice": "Cinnamon",
+        "magic_spice_reasoning": "Adding a pinch of cinnamon would complement the sweetness of the honey and enhance the warm, nutty flavor of the dish.",
+        "youtube_search_query": "Candied Nuts"
+      },
+      "date": "2026-01-03T07:25:45.655Z"
+    },
+    {
+      "recipe": {
+        "title": "Gulab Jamun Delight",
+        "ingredients": [
+          "1 1/2 cups milk powder",
+          "1/2 cup all-purpose flour",
+          "1/4 teaspoon baking soda",
+          "1/4 teaspoon salt",
+          "1/4 cup ghee or unsalted butter, melted",
+          "1/2 cup lukewarm milk",
+          "1/4 cup yogurt",
+          "1 tablespoon lemon juice",
+          "For the syrup: 1 cup granulated sugar",
+          "1 cup water",
+          "1/4 cup rose water",
+          "1/4 cup lemon juice",
+          "1/4 teaspoon cardamom powder",
+          "Chopped pistachios or almonds for garnish"
+        ],
+        "instructions": [
+          "In a large mixing bowl, combine the milk powder, flour, baking soda, and salt.",
+          "Add the melted ghee or butter, lukewarm milk, yogurt, and lemon juice. Mix until a smooth dough forms.",
+          "Knead the dough for 5-7 minutes until it becomes pliable and smooth.",
+          "Cover the dough with a damp cloth and let it rest for 30 minutes.",
+          "Divide the dough into small balls, about 1 inch in diameter.",
+          "Heat oil in a deep frying pan over medium heat and fry the dough balls until they are golden brown.",
+          "Remove the fried dough balls from the oil and soak them in the syrup.",
+          "To make the syrup, combine the sugar, water, rose water, lemon juice, and cardamom powder in a saucepan.",
+          "Bring the syrup to a boil, then reduce the heat and simmer for 5-7 minutes or until the syrup thickens slightly.",
+          "Add the fried dough balls to the syrup and simmer for an additional 2-3 minutes.",
+          "Remove the gulab jamun from the syrup and garnish with chopped pistachios or almonds."
+        ],
+        "health_score": 6,
+        "health_reasoning": "Gulab jamun is a fried dessert, which increases its calorie count. However, using milk powder and reducing the amount of sugar in the syrup makes it a relatively healthier option compared to other fried desserts.",
+        "magic_spice": "Saffron threads",
+        "magic_spice_reasoning": "Saffron adds a unique flavor and aroma to the gulab jamun, and its subtle earthy and floral notes complement the rose water and cardamom perfectly.",
+        "youtube_search_query": "Gulab Jamun Recipe"
+      },
+      "date": "2026-01-03T04:51:47.616Z"
+    },
+    {
+      "recipe": {
+        "title": "Sunrise Scramble",
+        "ingredients": [
+          "4 large eggs",
+          "1/2 cup rolled oats",
+          "1/2 cup mixed berries (fresh or frozen)",
+          "1/4 cup chopped walnuts",
+          "1 tablespoon honey",
+          "1/4 teaspoon salt",
+          "1 tablespoon olive oil"
+        ],
+        "instructions": [
+          "In a bowl, whisk together eggs and a pinch of salt until well combined.",
+          "Heat olive oil in a non-stick pan over medium heat.",
+          "Add oats to the pan and cook for 2-3 minutes, stirring frequently, until lightly toasted.",
+          "Add mixed berries to the pan and cook for an additional 2 minutes, until they start to release their juice.",
+          "Pour whisked eggs over the oat and berry mixture in the pan.",
+          "Scramble the eggs with a spatula until they are cooked through.",
+          "Stir in chopped walnuts and honey.",
+          "Serve hot and enjoy!"
+        ],
+        "health_score": 9,
+        "health_reasoning": "This recipe is high in protein, fiber, and healthy fats, making it a nutritious and filling breakfast option.",
+        "magic_spice": "Cinnamon",
+        "magic_spice_reasoning": "Adding a sprinkle of cinnamon can enhance the sweetness of the berries and add a warm, comforting flavor to the dish.",
+        "youtube_search_query": "Healthy Breakfast Scramble"
+      },
+      "date": "2026-01-02T18:20:26.961Z"
+    },
+    {
+      "recipe": {
+        "title": "Peanut Butter Chocolate Chip Energy Bites",
+        "ingredients": [
+          "1 container Peanut Butter (Chocolate Flavor)",
+          "2 cups Rolled Oats",
+          "1 cup Honey",
+          "1/2 cup Chocolate Chips",
+          "1/4 cup Chopped Nuts (optional)"
+        ],
+        "instructions": [
+          "In a large mixing bowl, combine the peanut butter, honey, and oats. Mix until well combined.",
+          "Stir in the chocolate chips and chopped nuts (if using).",
+          "Use your hands to shape the mixture into small balls, about 1 inch in diameter.",
+          "Place the energy balls on a baking sheet lined with parchment paper.",
+          "Refrigerate for at least 30 minutes to set.",
+          "Store in an airtight container in the refrigerator for up to a week."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in healthy fats and protein from the peanut butter, and fiber from the oats. However, it is also high in sugar from the honey and chocolate chips.",
+        "magic_spice": "Sea Salt",
+        "magic_spice_reasoning": "A pinch of sea salt will balance out the sweetness of the honey and chocolate chips, and enhance the flavor of the peanut butter.",
+        "youtube_search_query": "No Bake Energy Balls"
+      },
+      "date": "2026-01-02T18:20:00.021Z"
+    },
     {
       "recipe": {
         "title": "Trash to Treasure Fork Revival",
@@ -1285,9 +1553,9 @@
     }
   ],
   "stats": {
-    "healthScore": 6.4,
-    "recipesCooked": 36,
-    "ingredientsSaved": 43,
+    "healthScore": 7.9,
+    "recipesCooked": 44,
+    "ingredientsSaved": 49,
     "wasteSaved": 95
   }
 }

@@ -1,0 +1,40 @@
+{
+    "HomePage": {
+        "title": "What's in your fridge?",
+        "subtitle": "AI-powered recipe generator based on your ingredients",
+        "scanButton": "Scan Fridge",
+        "searchButton": "Search Recipes",
+        "uploadTip": "Tip: clearer photos give better results"
+    },
+    "Navigation": {
+        "home": "Home",
+        "data": "Your Data",
+        "help": "Help"
+    },
+    "Recipe": {
+        "generating": "Generating recipe...",
+        "ingredients": "Ingredients",
+        "instructions": "Instructions"
+    },
+    "ArInterface": {
+        "tapToEnable": "Tap to enable camera",
+        "starting": "Starting camera...",
+        "scanHint": "Scan any food - snacks, drinks, fruits, cooked meals, or packaged items",
+        "analyzing": "Analyzing...",
+        "analyzingAI": "AI Analyzing...",
+        "detecting": "Detecting ingredients...",
+        "processing": "Processing image...",
+        "foundItems": "Found {count} item(s)!",
+        "noFood": "No food detected! Try pointing at any edible items.",
+        "cookButton": "Cook {count} Items!",
+        "instamart": "Instamart",
+        "instamartSub": "Order missing ingredients",
+        "searchPlaceholder": "Find recipes using Instamart...",
+        "listening": "Listening...",
+        "healthScore": "Health Score",
+        "foodWaste": "Food Waste",
+        "recipes": "Recipes",
+        "saved": "Saved this week",
+        "generated": "Generated"
+    }
+}

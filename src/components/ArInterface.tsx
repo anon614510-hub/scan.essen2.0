@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff, ChefHat } from "lucide-react";
 import clsx from "clsx";
 import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
 import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
 import { Ingredient, Recipe } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
@@ -101,6 +102,9 @@ export default function ArInterface() {
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [isCameraLoading, setIsCameraLoading] = useState(false);
 
+    const t = useTranslations('ArInterface');
+    const locale = useLocale();
+
     // State for ingredients and recipes
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
     const [recipe, setRecipe] = useState<Recipe | null>(null);
@@ -175,7 +179,7 @@ export default function ArInterface() {
         setError(null);
         setIsGenerating(true);
         try {
-            const result = await generateRecipe(ingredients, "Any", [], transcript);
+            const result = await generateRecipe(ingredients, "Any", [], transcript, locale);
             if (result.error) setError(result.error);
             else if (result.recipe) {
                 setRecipe(result.recipe);
@@ -324,9 +328,9 @@ export default function ArInterface() {
 
         // Simulate progress messages
         const progressMessages = [
-            "🔍 Analyzing with AI...",
-            "🥗 Detecting ingredients...",
-            "🧠 Processing image..."
+            `🔍 ${t('analyzingAI')}`,
+            `🥗 ${t('detecting')}`,
+            `🧠 ${t('processing')}`
         ];
         let msgIndex = 0;
         const progressInterval = setInterval(() => {
@@ -335,7 +339,7 @@ export default function ArInterface() {
         }, 2000);
 
         try {
-            const result = await analyzeImage(base64Image);
+            const result = await analyzeImage(base64Image, locale);
             clearInterval(progressInterval);
 
             if (!result || typeof result !== 'object') {
@@ -349,7 +353,7 @@ export default function ArInterface() {
                 setError(result.error);
             } else if (!result.ingredients || !Array.isArray(result.ingredients) || result.ingredients.length === 0) {
                 setScanStatus("");
-                setError("🤔 No food detected! Try pointing at any edible items - snacks, drinks, cooked food, or packaged items.");
+                setError(t('noFood'));
             } else {
                 // Safely filter and validate ingredients
                 const validIngredients = result.ingredients.filter((i): i is Ingredient =>
@@ -363,7 +367,7 @@ export default function ArInterface() {
                 }
 
                 setIngredients(validIngredients);
-                setScanStatus(`✅ Found ${validIngredients.length} item${validIngredients.length > 1 ? 's' : ''}!`);
+                setScanStatus(`✅ ${t('foundItems', { count: validIngredients.length })}`);
                 // Trigger cool scan animation
                 setNewlyScannedItems(validIngredients.map((i: Ingredient) => i.name));
                 setShowScanSuccess(true);
@@ -396,7 +400,7 @@ export default function ArInterface() {
         setIsGenerating(true);
         console.log("Generating recipe for ingredients:", ingredients.map(i => i.name));
         try {
-            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript);
+            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript, locale);
             console.log("Recipe generation result:", result);
             if (result.error) {
                 console.error("Recipe error:", result.error);
@@ -460,10 +464,10 @@ export default function ArInterface() {
                                 )}
                             </div>
                             <p className="text-gray-600 font-medium">
-                                {isCameraLoading ? "Starting camera..." : "Tap to enable camera"}
+                                {isCameraLoading ? t('starting') : t('tapToEnable')}
                             </p>
                         </button>
-                        <p className="text-gray-500 text-sm text-center px-8">Scan any food - snacks, drinks, fruits, cooked meals, or packaged items</p>
+                        <p className="text-gray-500 text-sm text-center px-8">{t('scanHint')}</p>
                     </div>
                 </div>
             )}
@@ -508,7 +512,7 @@ export default function ArInterface() {
                                     {isAnalyzing && !scanStatus.includes("✅") && (
                                         <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
                                     )}
-                                    {scanStatus || "🔍 Analyzing..."}
+                                    {scanStatus || `🔍 ${t('analyzing')}`}
                                 </p>
                             </div>
                         </div>
@@ -624,7 +628,7 @@ export default function ArInterface() {
                         ) : (
                             <ChefHat className="w-6 h-6" />
                         )}
-                        <span className="font-bold text-lg">Cook {ingredients.length} Items!</span>
+                        <span className="font-bold text-lg">{t('cookButton', { count: ingredients.length })}</span>
                     </button>
                 </div>
             )}
@@ -638,14 +642,14 @@ export default function ArInterface() {
                         <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
                             <ShoppingCart className="w-4 h-4 text-white" />
                         </div>
-                        <span className="font-bold text-gray-800">Instamart</span>
-                        <span className="text-xs text-gray-500 ml-auto">Order missing ingredients</span>
+                        <span className="font-bold text-gray-800">{t('instamart')}</span>
+                        <span className="text-xs text-gray-500 ml-auto">{t('instamartSub')}</span>
                     </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder={isListening ? "Listening..." : "Find recipes using Instamart..."}
+                            placeholder={isListening ? t('listening') : t('searchPlaceholder')}
                             className={clsx(
                                 "w-full h-10 rounded-xl bg-gray-100 pl-10 pr-12 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-300",
                                 isListening && "ring-2 ring-orange-400 animate-pulse"
@@ -670,7 +674,7 @@ export default function ArInterface() {
                 {/* Stats Cards */}
                 <div className="flex gap-2 mx-4 mb-3">
                     <Link href="/your-data" className="flex-1 bg-[#d4f0e8] rounded-2xl p-3 shadow-md">
-                        <p className="text-[10px] text-gray-600 font-medium">Health Score</p>
+                        <p className="text-[10px] text-gray-600 font-medium">{t('healthScore')}</p>
                         <p className="text-2xl font-black text-gray-800">{stats.healthScore}/10</p>
                         <div className="flex gap-0.5 mt-1">
                             {[...Array(10)].map((_, i) => (
@@ -682,14 +686,14 @@ export default function ArInterface() {
                         </div>
                     </Link>
                     <div className="flex-1 bg-[#e8f5e0] rounded-2xl p-3 shadow-md">
-                        <p className="text-[10px] text-gray-600 font-medium">Food Waste</p>
+                        <p className="text-[10px] text-gray-600 font-medium">{t('foodWaste')}</p>
                         <p className="text-2xl font-black text-gray-800">{stats.wasteSaved}%</p>
-                        <p className="text-[10px] text-emerald-600 font-medium mt-1">Saved this week 🌱</p>
+                        <p className="text-[10px] text-emerald-600 font-medium mt-1">{t('saved')} 🌱</p>
                     </div>
                     <div className="flex-1 bg-[#fce8d8] rounded-2xl p-3 shadow-md">
-                        <p className="text-[10px] text-gray-600 font-medium">Recipes</p>
+                        <p className="text-[10px] text-gray-600 font-medium">{t('recipes')}</p>
                         <p className="text-2xl font-black text-gray-800">{stats.recipesGenerated}</p>
-                        <p className="text-[10px] text-orange-600 font-medium mt-1">Generated 😊</p>
+                        <p className="text-[10px] text-orange-600 font-medium mt-1">{t('generated')} 😊</p>
                     </div>
                 </div>
 
