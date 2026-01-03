@@ -46,7 +46,7 @@
       "name": "Peanut Butter",
       "quantity": "1 tub",
       "expiry_status": "fresh",
-      "expiry_reasoning": "Unopened and clearly labeled with expiration date, which has not passed."
+      "expiry_reasoning": "Sealed container with no visible signs of spoilage or expiration date reached"
     },
     {
       "name": "Medhe Medhe",
@@ -284,6 +284,78 @@
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "Rajasthani Delight Dal Bati",
+        "ingredients": [
+          "1 cup split green gram (moong dal)",
+          "1/2 cup split Bengal gram (chana dal)",
+          "1/2 cup wheat flour",
+          "1/4 teaspoon salt",
+          "1/4 teaspoon baking powder",
+          "1/4 teaspoon ghee or oil",
+          "1/2 cup lukewarm water",
+          "1 onion, chopped",
+          "2 cloves garlic, minced",
+          "1 inch ginger, grated",
+          "1 teaspoon cumin seeds",
+          "1 teaspoon coriander powder",
+          "1/2 teaspoon turmeric powder",
+          "1/2 teaspoon red chili powder",
+          "2 tablespoons ghee or oil",
+          "2 tablespoons fresh cilantro, chopped",
+          "1 tablespoon lemon juice"
+        ],
+        "instructions": [
+          "Preheat oven to 400°F (200°C).",
+          "In a large bowl, mix together wheat flour, salt, and baking powder.",
+          "Add lukewarm water and knead to form a soft dough.",
+          "Cover and let the dough rest for 30 minutes.",
+          "Divide the dough into 6-8 equal portions and shape into balls.",
+          "Flatten each ball into a disk shape and bake for 15-20 minutes or until golden brown.",
+          "In a large pan, heat 1 tablespoon of ghee or oil over medium heat.",
+          "Add cumin seeds, chopped onion, minced garlic, and grated ginger. Cook until the onion is translucent.",
+          "Add moong dal, chana dal, coriander powder, turmeric powder, and red chili powder. Cook for 1-2 minutes.",
+          "Add 2 cups of water and bring to a boil. Reduce heat and simmer for 20-25 minutes or until the dal is cooked.",
+          "Serve the dal with baked bati and garnish with chopped cilantro and lemon juice."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in protein, fiber, and complex carbohydrates, making it a nutritious and filling meal. The use of wheat flour and lentils provides a good source of iron, calcium, and other essential minerals.",
+        "magic_spice": "Kasuri methi (dried fenugreek leaves)",
+        "magic_spice_reasoning": "Kasuri methi adds a unique flavor and aroma to the dish, and its slightly bitter taste helps to balance the sweetness of the dal and the bati.",
+        "youtube_search_query": "Dal Bati Recipe"
+      },
+      "date": "2026-01-03T18:40:44.726Z"
+    },
+    {
+      "recipe": {
+        "title": "Grilled Chicken and Avocado Salad",
+        "ingredients": [
+          "1 lb boneless, skinless chicken breast",
+          "1/2 avocado, diced",
+          "1 cup mixed greens",
+          "1/2 cup cherry tomatoes, halved",
+          "1/4 cup olive oil",
+          "2 tablespoons lemon juice",
+          "Salt and pepper to taste"
+        ],
+        "instructions": [
+          "Preheat grill to medium-high heat",
+          "Season the chicken breast with salt and pepper",
+          "Grill the chicken for 5-6 minutes per side, or until cooked through",
+          "In a large bowl, combine mixed greens, diced avocado, and cherry tomatoes",
+          "Slice the grilled chicken and add to the bowl",
+          "In a small bowl, whisk together olive oil and lemon juice",
+          "Pour the dressing over the salad and toss to combine"
+        ],
+        "health_score": 9,
+        "health_reasoning": "This recipe is high in protein, healthy fats, and fiber, making it an excellent choice for weight loss and muscle gain. The avocado provides healthy fats, while the chicken breast provides lean protein. This recipe also avoids high-sodium and high-sugar ingredients, making it suitable for hypertension and diabetes management. However, please note that the original ingredient 'Peanut Butter' is not used in this recipe due to the user's peanut allergy.",
+        "magic_spice": "Paprika",
+        "magic_spice_reasoning": "Paprika adds a smoky flavor to the grilled chicken and complements the earthy flavor of the avocado, enhancing the overall flavor profile of the dish",
+        "youtube_search_query": "Grilled Chicken and Avocado Salad"
+      },
+      "date": "2026-01-03T18:39:03.683Z"
+    },
     {
       "recipe": {
         "title": "Vegan Peanut Butter Protein Balls",
@@ -1803,9 +1875,9 @@
     }
   ],
   "stats": {
-    "healthScore": 8.1,
-    "recipesCooked": 46,
-    "ingredientsSaved": 55,
+    "healthScore": 8.3,
+    "recipesCooked": 48,
+    "ingredientsSaved": 56,
     "wasteSaved": 95
   },
   "profile": {
@@ -1817,7 +1889,8 @@
       "muscle"
     ],
     "allergies": [
-      "gluten"
+      "gluten",
+      "peanuts"
     ],
     "dietaryApproach": "Vegan",
     "state": "Himachal Pradesh",

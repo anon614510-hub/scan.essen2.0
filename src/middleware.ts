@@ -1,16 +1,31 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
 
-export default createMiddleware({
-    // A list of all locales that are supported
+const intlMiddleware = createMiddleware({
     locales: ['en', 'es'],
-
-    // Used when no locale matches
     defaultLocale: 'en'
 });
 
+const isPublicRoute = createRouteMatcher([
+    '/sign-in(.*)',
+    '/sign-up(.*)',
+    '/:locale/sign-in(.*)',
+    '/en/sign-in(.*)',
+    '/es/sign-in(.*)',
+    '/:locale/sign-up(.*)',
+    '/en/sign-up(.*)',
+    '/es/sign-up(.*)',
+    '/api/webhooks(.*)',
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+    if (isPublicRoute(req)) {
+        return intlMiddleware(req);
+    }
+    await auth.protect();
+    return intlMiddleware(req);
+});
+
 export const config = {
-    // Match all pathnames except for
-    // - … if they start with `/api`, `/_next` or `/_vercel`
-    // - … the ones containing a dot (e.g. `favicon.ico`)
     matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };

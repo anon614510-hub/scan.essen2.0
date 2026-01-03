@@ -11,9 +11,9 @@ interface OnboardingProps {
     initialProfile?: Partial<UserProfile> | null;
 }
 
-type Step = 'welcome' | 'safety' | 'philosophy' | 'health' | 'goals' | 'kitchen' | 'age' | 'diseases' | 'region' | 'sex' | 'preview' | 'complete';
+type Step = 'welcome' | 'safety' | 'philosophy' | 'health' | 'goals' | 'kitchen' | 'age' | 'diseases' | 'region' | 'preview' | 'complete';
 
-const STEPS: Step[] = ['welcome', 'safety', 'philosophy', 'health', 'goals', 'kitchen', 'age', 'diseases', 'region', 'sex', 'preview', 'complete'];
+const STEPS: Step[] = ['welcome', 'safety', 'philosophy', 'health', 'goals', 'kitchen', 'age', 'diseases', 'region', 'preview', 'complete'];
 
 // Confetti component for celebration
 const Confetti = () => {
@@ -88,7 +88,8 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
         healthConditions: [],
         goals: [],
         allergies: [],
-        age: 30
+        age: undefined,
+        sex: undefined
     });
 
     // Typewriter effect for welcome screen
@@ -157,10 +158,9 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
             case 'health': return true;
             case 'goals': return (profile.goals?.length || 0) > 0;
             case 'kitchen': return !!profile.cookingTime && !!profile.cookingConfidence;
-            case 'age': return !!profile.age;
+            case 'age': return !!profile.age && !!profile.sex;
             case 'diseases': return true;
             case 'region': return !!profile.state && !!profile.preferredLanguage;
-            case 'sex': return !!profile.sex;
             case 'preview': return true;
             case 'complete': return true;
         }
@@ -301,6 +301,7 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
             case 'philosophy':
                 const dietOptions = [
                     { id: 'Omnivore', label: 'Omnivore', desc: 'No restrictions', icon: <div className="text-xl">🍖</div> },
+                    { id: 'Non-Vegetarian', label: 'Non-Vegetarian', desc: 'Meat & Plants', icon: <div className="text-xl">🍗</div> },
                     { id: 'Vegetarian', label: 'Vegetarian', desc: 'No meat', icon: <Leaf className="w-6 h-6" /> },
                     { id: 'Vegan', label: 'Vegan', desc: 'Plant-based only', icon: <Leaf className="w-6 h-6 text-green-600" /> },
                     { id: 'Flexitarian', label: 'Flexitarian', desc: 'Mostly plants, occasional meat', icon: <Heart className="w-6 h-6" /> },
@@ -367,7 +368,7 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
                                     <button
                                         onClick={() => toggleSelection('goals', item.id)}
                                         className={clsx(
-                                            "p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center text-center gap-3 aspect-square justify-center relative overflow-hidden",
+                                            "w-full h-full min-h-[140px] p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center text-center gap-3 justify-center relative overflow-hidden",
                                             profile.goals?.includes(item.id)
                                                 ? "bg-[#6b8e23]/10 border-[#6b8e23] shadow-md"
                                                 : "bg-[#f8faf5] border-[#e8ebd9] hover:bg-white"
@@ -470,11 +471,13 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
                     </div>
                 );
 
-            // AGE
+            // THE BASICS (Age + Sex)
             case 'age':
                 return (
                     <div className="space-y-6">
                         {renderHeader("The Basics", "This helps us calculate nutritional baselines accurately.")}
+
+                        {/* Age Selection */}
                         <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm animate-card-entrance onboard-stagger-1">
                             <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Age</h3>
                             <div className="flex items-center justify-center gap-6">
@@ -483,12 +486,34 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
                                     className="w-12 h-12 rounded-full bg-[#f0f4e8] text-[#6b8e23] flex items-center justify-center hover:bg-[#e2e8d4] transition-all active:scale-90 text-xl font-bold"
                                 >-</button>
                                 <span className="text-5xl font-black text-[#2d3a28] w-20 text-center transition-all">
-                                    {profile.age || 30}
+                                    {profile.age || '--'}
                                 </span>
                                 <button
                                     onClick={() => updateProfile({ age: (profile.age || 30) + 1 })}
                                     className="w-12 h-12 rounded-full bg-[#f0f4e8] text-[#6b8e23] flex items-center justify-center hover:bg-[#e2e8d4] transition-all active:scale-90 text-xl font-bold"
                                 >+</button>
+                            </div>
+                        </div>
+
+                        {/* Biological Sex Selection */}
+                        <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm animate-card-entrance onboard-stagger-2">
+                            <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Biological Sex</h3>
+                            <div className="flex gap-2">
+                                {['Female', 'Male', 'Prefer not to say'].map((option, index) => (
+                                    <button
+                                        key={option}
+                                        onClick={() => updateProfile({ sex: option as UserProfile['sex'] })}
+                                        className={clsx(
+                                            "flex-1 py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 duration-300",
+                                            profile.sex === option
+                                                ? "bg-[#6b8e23] border-[#6b8e23] text-white scale-[1.02]"
+                                                : "bg-white border-[#e8ebd9] text-gray-600 hover:border-[#cbd5e1]",
+                                            `onboard-stagger-${index + 3}`
+                                        )}
+                                    >
+                                        {option}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -613,33 +638,6 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
                     </div>
                 );
 
-            // SEX
-            case 'sex':
-                return (
-                    <div className="space-y-6">
-                        {renderHeader("Biological Basics", "This helps us calculate nutritional baselines accurately.")}
-                        <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm animate-card-entrance onboard-stagger-2">
-                            <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Biological Sex</h3>
-                            <div className="flex gap-2">
-                                {['Female', 'Male', 'Prefer not to say'].map((option, index) => (
-                                    <button
-                                        key={option}
-                                        onClick={() => updateProfile({ sex: option as UserProfile['sex'] })}
-                                        className={clsx(
-                                            "flex-1 py-3 px-2 rounded-xl text-sm font-bold transition-all border-2 duration-300",
-                                            profile.sex === option
-                                                ? "bg-[#6b8e23] border-[#6b8e23] text-white scale-[1.02]"
-                                                : "bg-white border-[#e8ebd9] text-gray-600 hover:border-[#cbd5e1]",
-                                            `onboard-stagger-${index + 3}`
-                                        )}
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                );
 
             // PREVIEW (Animated Chart)
             case 'preview':
@@ -758,20 +756,17 @@ export default function Onboarding({ onComplete, initialProfile }: OnboardingPro
                     {renderStepContent()}
                 </div>
 
-                {/* Bottom Navigation */}
                 <div className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-gray-200 p-4 safe-area-pb">
-                    <div className="max-w-md mx-auto flex items-center justify-between gap-4">
-                        <button
-                            onClick={handleBack}
-                            disabled={!showBackButton}
-                            className={clsx(
-                                "flex items-center gap-2 px-6 py-3 rounded-full font-bold text-[#5c6b57] transition-all duration-300",
-                                !showBackButton ? "opacity-0 pointer-events-none" : "hover:bg-[#f0f4e8] active:scale-95"
-                            )}
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                            Back
-                        </button>
+                    <div className={clsx("max-w-md mx-auto flex items-center gap-4", !showBackButton ? "justify-center" : "justify-between")}>
+                        {showBackButton && (
+                            <button
+                                onClick={handleBack}
+                                className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-[#5c6b57] transition-all duration-300 hover:bg-[#f0f4e8] active:scale-95"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                                Back
+                            </button>
+                        )}
 
                         <button
                             onClick={handleNext}

@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,16 +54,18 @@ export default async function RootLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
-            <head>
-                {/* Camera and media permissions hints for mobile browsers */}
-                <meta httpEquiv="Permissions-Policy" content="camera=*, microphone=*" />
-            </head>
-            <body className={clsx(inter.className, "antialiased min-h-screen bg-black")}>
-                <NextIntlClientProvider messages={messages}>
-                    {children}
-                </NextIntlClientProvider>
-            </body>
-        </html>
+        <ClerkProvider>
+            <html lang={locale}>
+                <head>
+                    {/* Camera and media permissions hints for mobile browsers */}
+                    <meta httpEquiv="Permissions-Policy" content="camera=*, microphone=*" />
+                </head>
+                <body className={clsx(inter.className, "antialiased min-h-screen bg-black")}>
+                    <NextIntlClientProvider messages={messages}>
+                        {children}
+                    </NextIntlClientProvider>
+                </body>
+            </html>
+        </ClerkProvider>
     );
 }

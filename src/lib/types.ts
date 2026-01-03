@@ -19,7 +19,7 @@ export interface Recipe {
 
 export interface UserProfile {
     healthConditions: string[];
-    dietaryApproach: 'Omnivore' | 'Vegetarian' | 'Vegan' | 'Flexitarian';
+    dietaryApproach: 'Omnivore' | 'Vegetarian' | 'Non-Vegetarian' | 'Vegan' | 'Flexitarian';
     goals: string[];
     cookingTime: 'Time Crunch' | 'Standard' | 'Project Cook';
     cookingConfidence: 'Beginner' | 'Intermediate' | 'Pro';
