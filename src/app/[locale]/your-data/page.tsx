@@ -279,7 +279,7 @@ export default function YourDataPage() {
                             <div>
                                 <div className="font-black text-xl text-gray-800">Keep it up!</div>
                                 <div className="text-sm text-gray-600 mt-1">
-                                    You've saved <span className="font-bold text-emerald-600">{stats.ingredientsSaved}</span> ingredients total!
+                                    You&apos;ve saved <span className="font-bold text-emerald-600">{stats.ingredientsSaved}</span> ingredients total!
                                 </div>
                             </div>
                         </div>

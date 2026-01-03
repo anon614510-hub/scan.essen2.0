@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { Ingredient, Recipe } from './types';
+import { Ingredient, Recipe, UserProfile } from './types';
 
 const DB_PATH = path.join(process.cwd(), 'data.json');
 
@@ -10,6 +10,7 @@ export interface UserData {
         recipe: Recipe;
         date: string; // ISO string
     }[];
+    profile?: UserProfile;
     stats: {
         healthScore: number;
         recipesCooked: number;
@@ -33,7 +34,7 @@ async function readDb(): Promise<UserData> {
     try {
         const data = await fs.readFile(DB_PATH, 'utf-8');
         return JSON.parse(data);
-    } catch (error) {
+    } catch {
         // If file doesn't exist, return default
         return DEFAULT_DATA;
     }
@@ -101,4 +102,15 @@ export async function getHistory(): Promise<{ recipe: Recipe; date: string }[]> 
 export async function getUserStats() {
     const db = await readDb();
     return db.stats;
+}
+
+export async function saveProfile(profile: UserProfile): Promise<void> {
+    const db = await readDb();
+    db.profile = profile;
+    await writeDb(db);
+}
+
+export async function getProfile(): Promise<UserProfile | null> {
+    const db = await readDb();
+    return db.profile || null;
 }

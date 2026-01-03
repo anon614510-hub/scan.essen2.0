@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Search as SearchIcon, ArrowLeft, ChefHat, Clock, Flame, Sparkles, TrendingUp, Camera, BarChart2, HelpCircle, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
-import { getHistoryAction, generateRecipeByName, saveRecipeAction } from "@/app/actions";
-import { Recipe } from "@/lib/types";
+import { getHistoryAction, generateRecipeByName, saveRecipeAction, getProfileAction } from "@/app/actions";
+import { Recipe, UserProfile } from "@/lib/types";
 import RecipeDisplay from "@/components/RecipeDisplay";
 
 const POPULAR_SEARCHES = [
@@ -41,6 +41,7 @@ export default function SearchPage() {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedTools, setSelectedTools] = useState<string[]>([]);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
     // Handle back button to go to camera page
     useEffect(() => {
@@ -72,10 +73,14 @@ export default function SearchPage() {
         }
     };
 
-    // Load history on mount
+    // Load history and profile on mount
     useEffect(() => {
         getHistoryAction()
             .then(setHistory)
+            .catch(console.error);
+
+        getProfileAction()
+            .then(setUserProfile)
             .catch(console.error);
     }, []);
 
@@ -192,7 +197,7 @@ export default function SearchPage() {
                         ) : (
                             <div className="space-y-4">
                                 <div className="text-center py-6 text-gray-500">
-                                    <p>No recipes found in your history for "{query}"</p>
+                                    <p>No recipes found in your history for &quot;{query}&quot;</p>
                                 </div>
 
                                 {/* AI Generation Card */}
@@ -205,7 +210,7 @@ export default function SearchPage() {
                                             <h3 className="font-bold text-lg">Create New Recipe</h3>
                                         </div>
                                         <p className="text-indigo-100 mb-6 max-w-[90%] text-sm leading-relaxed">
-                                            Want the AI chef to invent a brand new recipe for <strong>"{query}"</strong>?
+                                            Want the AI chef to invent a brand new recipe for <strong>&quot;{query}&quot;</strong>?
                                         </p>
 
                                         <button
@@ -220,7 +225,7 @@ export default function SearchPage() {
                                                 </>
                                             ) : (
                                                 <>
-                                                    ✨ Generate "{query}"
+                                                    ✨ Generate &quot;{query}&quot;
                                                 </>
                                             )}
                                         </button>
@@ -338,7 +343,11 @@ export default function SearchPage() {
                             >
                                 <X className="w-5 h-5" />
                             </button>
-                            <RecipeDisplay recipe={selectedRecipe} onReset={() => setSelectedRecipe(null)} />
+                            <RecipeDisplay
+                                recipe={selectedRecipe}
+                                onReset={() => setSelectedRecipe(null)}
+                                userProfile={userProfile}
+                            />
                         </div>
                     </div>
                 )

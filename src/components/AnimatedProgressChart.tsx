@@ -33,7 +33,6 @@ export default function AnimatedProgressChart({
     const height = 180;
     const padding = { top: 40, right: 60, bottom: 40, left: 20 };
     const chartWidth = width - padding.left - padding.right;
-    const chartHeight = height - padding.top - padding.bottom;
 
     // Calculate the curved path (bezier curve similar to reference)
     const startX = padding.left;

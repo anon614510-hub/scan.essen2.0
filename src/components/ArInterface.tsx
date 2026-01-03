@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -5,8 +6,8 @@ import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicO
 import clsx from "clsx";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
-import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
-import { Ingredient, Recipe } from "@/lib/types";
+import { analyzeImage, generateRecipe, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
+import { Ingredient, Recipe, UserProfile } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
 
 
@@ -95,7 +96,7 @@ function getIngredientEmoji(name: string): string {
     return INGREDIENT_EMOJIS.default;
 }
 
-export default function ArInterface() {
+export default function ArInterface({ userProfile }: { userProfile: UserProfile | null }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -169,7 +170,8 @@ export default function ArInterface() {
         };
 
         recognition.start();
-    }, [ingredients]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleGenerateWithVoice = async (transcript: string) => {
         if (ingredients.length === 0) {
@@ -400,7 +402,7 @@ export default function ArInterface() {
         setIsGenerating(true);
         console.log("Generating recipe for ingredients:", ingredients.map(i => i.name));
         try {
-            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript, locale);
+            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript, locale, userProfile);
             console.log("Recipe generation result:", result);
             if (result.error) {
                 console.error("Recipe error:", result.error);
@@ -611,7 +613,11 @@ export default function ArInterface() {
                     >
                         ✕
                     </button>
-                    <RecipeDisplay recipe={recipe} onReset={handleReset} />
+                    <RecipeDisplay
+                        recipe={recipe}
+                        onReset={handleReset}
+                        userProfile={userProfile}
+                    />
                 </div>
             )}
 

@@ -1,11 +1,14 @@
 "use server";
 
-import { Ingredient, Recipe } from "@/lib/types";
+import { Ingredient, Recipe, UserProfile } from "@/lib/types";
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "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";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "";
 
-console.log("DEBUG: API Key loaded:", process.env.OPENROUTER_API_KEY ? "YES (" + process.env.OPENROUTER_API_KEY.substring(0, 10) + "...)" : "NO (Using backup)");
+console.log("DEBUG: OPENROUTER_API_KEY present:", !!OPENROUTER_API_KEY);
+if (OPENROUTER_API_KEY) {
+    console.log("DEBUG: API Key starts with:", OPENROUTER_API_KEY.substring(0, 10) + "...");
+}
 console.log("DEBUG: YouTube API Key loaded:", YOUTUBE_API_KEY ? "YES" : "NO");
 
 export interface YouTubeVideo {
@@ -17,17 +20,21 @@ export interface YouTubeVideo {
 /**
  * Search YouTube for videos matching a query
  */
-export async function searchYouTubeVideos(query: string, maxResults: number = 2): Promise<{
-    videos: YouTubeVideo[];
-    error?: string;
-}> {
+export async function searchYouTubeVideos(query: string, limit: number = 3, language: string = 'English', restrictedItems: string[] = []): Promise<{ videos: YouTubeVideo[], error?: string }> {
     try {
         if (!YOUTUBE_API_KEY) {
             return { videos: [], error: "YouTube API key not configured" };
         }
 
+        const negativeQuery = restrictedItems.length > 0
+            ? restrictedItems.map(item => ` -"${item}"`).join("")
+            : "";
+
+        const localizedQuery = `${query} recipe in ${language}${negativeQuery}`;
+        console.log(`Searching YouTube: ${localizedQuery}`);
+
         const response = await fetch(
-            `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query + " recipe")}&type=video&maxResults=${maxResults}&key=${YOUTUBE_API_KEY}`
+            `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(localizedQuery)}&type=video&maxResults=${limit}&key=${YOUTUBE_API_KEY}`
         );
 
         const data = await response.json();
@@ -37,6 +44,7 @@ export async function searchYouTubeVideos(query: string, maxResults: number = 2)
             return { videos: [], error: data.error.message || "YouTube API error" };
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const videos: YouTubeVideo[] = (data.items || []).map((item: any) => ({
             videoId: item.id.videoId,
             title: item.snippet.title,
@@ -48,6 +56,19 @@ export async function searchYouTubeVideos(query: string, maxResults: number = 2)
         console.error("YouTube search error:", error);
         return { videos: [], error: "Failed to search YouTube" };
     }
+}
+
+/**
+ * Get famous regional dishes based on selected state
+ */
+export async function getRegionalRecommendations(state: string): Promise<string[]> {
+    const recommendations: Record<string, string[]> = {
+        'Gujarat': ['Dhokla', 'Khandvi', 'Thepla', 'Undhiyu', 'Handvo'],
+        'Rajasthan': ['Dal Baati Churma', 'Gatte ki Sabzi', 'Laal Maas', 'Ker Sangri', 'Pyaz Kachori'],
+        'Madhya Pradesh': ['Poha Jalebi', 'Bhutte Ka Kees', 'Dal Bafla', 'Seekh Kebab', 'Malpua'],
+        'Tamil Nadu': ['Masala Dosa', 'Idli-Sambar', 'Chettinad Chicken', 'Pongal', 'Meduvada']
+    };
+    return recommendations[state] || [];
 }
 
 
@@ -123,7 +144,7 @@ Respond with a JSON array of food items only, no other text. Example:
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                    console.error(`Model ${model} API Error:`, JSON.stringify(data.error));
                     continue;
                 }
 
@@ -197,7 +218,8 @@ export async function generateRecipe(
     cuisine: string = "Any",
     equipment: string[] = [],
     preferences: string = "",
-    locale: string = "en"
+    locale: string = "en",
+    userProfile: UserProfile | null = null
 ): Promise<{
     recipe: Recipe | null;
     error?: string;
@@ -224,22 +246,36 @@ export async function generateRecipe(
             : "";
 
         const languageName = locale === 'es' ? 'Spanish' : 'English';
-        const prompt = `You are a creative AI chef. Generate a delicious, practical recipe using the provided ingredients.
+        const healthContext = userProfile ? `
+User Health Profile:
+- Age: ${userProfile.age || 'Not specified'}
+- Bio Sex: ${userProfile.sex || 'Not specified'}
+- Medical Conditions: ${userProfile.healthConditions?.length ? userProfile.healthConditions.join(", ") : 'None reported'}
+- Goals: ${userProfile.goals?.length ? userProfile.goals.join(", ") : 'None'}
+- Allergies: ${userProfile.allergies?.length ? userProfile.allergies.join(", ") : 'None'}
+- Dietary Approach: ${userProfile.dietaryApproach || 'Omnivore'}
+` : "";
+
+        const prompt = `You are a creative and expert health-conscious AI chef. Generate a delicious, practical recipe using the provided ingredients.
 IMPORTANT: Respond entirely in ${languageName} (titles, instructions, reasoning).
 
+${healthContext}
 ${cuisineNote}
 ${equipmentNote}
 ${preferencesNote}
+
+CRITICAL: If the user has specific medical conditions (e.g. Diabetes, Hypertension), YOU MUST strictly avoid ingredients that are dangerous or restricted for those conditions. Provide a substitute if possible.
 
 Respond with a JSON object containing:
 - title: creative recipe name
 - ingredients: array of ingredient strings with quantities
 - instructions: array of step-by-step cooking instructions
-- health_score: 1-10 rating based on nutritional value
-- health_reasoning: brief explanation of health score
+- health_score: 1-10 rating based on nutritional value (weighted for the user's specific conditions if provided)
+- health_reasoning: brief explanation of health score, mentioning why it's good for their specific health conditions if applicable.
 - magic_spice: one additional ingredient suggestion to elevate the dish
 - magic_spice_reasoning: why this spice would work
-- youtube_search_query: a generic, popular search term for this type of dish (e.g. "Chocolate Cake" instead of "My Special Chocolate Cake") to find video tutorials
+- youtube_search_query: a generic, popular search term for this recipe (e.g. 'Chocolate Cake' instead of 'My Special Chocolate Cake') to find video tutorials
+- restricted_ingredients: array of ingredients or food items that are STRICTLY FORBIDDEN for this user's health conditions/age which might typically be in this dish (so we can filter video searches). Example for Diabetes: ["Sugar", "Honey", "High-glycemic flour"]
 
 Respond with JSON only, no other text.
 
@@ -261,11 +297,11 @@ Create a recipe using these ingredients: ${ingredientList}`;
 
         for (const model of textModels) {
             try {
-                console.log(`Trying text model: ${model}`);
+                console.log(`Trying text model: ${model} `);
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY} `,
                         "Content-Type": "application/json",
                         "HTTP-Referer": "http://localhost:3000",
                         "X-Title": "Scan-Essen"
@@ -281,12 +317,12 @@ Create a recipe using these ingredients: ${ingredientList}`;
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                    console.log(`Model ${model} failed: `, JSON.stringify(data.error));
                     continue;
                 }
 
                 const content = data.choices?.[0]?.message?.content || "{}";
-                console.log(`Model ${model} SUCCESS! Content:`, content.substring(0, 500));
+                console.log(`Model ${model} SUCCESS! Content: `, content.substring(0, 500));
 
                 let recipe: Recipe | null = null;
                 try {
@@ -330,7 +366,7 @@ Create a recipe using these ingredients: ${ingredientList}`;
                     return { recipe };
                 }
             } catch (e) {
-                console.log(`Model ${model} error:`, e);
+                console.log(`Model ${model} error: `, e);
             }
         }
 
@@ -358,20 +394,20 @@ export async function generateRecipeByName(name: string, equipment: string[] = [
             : "";
 
         const languageName = locale === 'es' ? 'Spanish' : 'English';
-        const prompt = `You are a world-class chef. Create a detailed, healthy recipe for: "${name}".
-IMPORTANT: Respond entirely in ${languageName}.
+        const prompt = `You are a world - class chef.Create a detailed, healthy recipe for: "${name}".
+            IMPORTANT: Respond entirely in ${languageName}.
 Assume the user has basic pantry staples.${equipmentText}
 
 Respond with a JSON object containing:
-- title: creative recipe name (based on "${name}")
-- ingredients: array of ingredient strings with quantities
-- instructions: array of step-by-step cooking instructions
-- health_score: 1-10 rating based on nutritional value
-- health_reasoning: brief explanation of health score
-- magic_spice: one additional ingredient suggestion to elevate the dish
-- magic_spice: one additional ingredient suggestion to elevate the dish
-- magic_spice_reasoning: why this spice would work
-- youtube_search_query: a generic, popular search term for this type of dish (e.g. "Chocolate Cake" instead of "My Special Chocolate Cake") to find video tutorials
+        - title: creative recipe name(based on "${name}")
+            - ingredients: array of ingredient strings with quantities
+            - instructions: array of step - by - step cooking instructions
+                - health_score: 1 - 10 rating based on nutritional value
+                    - health_reasoning: brief explanation of health score
+                        - magic_spice: one additional ingredient suggestion to elevate the dish
+                            - magic_spice: one additional ingredient suggestion to elevate the dish
+                                - magic_spice_reasoning: why this spice would work
+                                    - youtube_search_query: a generic, popular search term for this type of dish(e.g. "Chocolate Cake" instead of "My Special Chocolate Cake") to find video tutorials
 
 Respond with JSON only, no other text.`;
 
@@ -391,11 +427,11 @@ Respond with JSON only, no other text.`;
 
         for (const model of textModels) {
             try {
-                console.log(`Trying text model for generation: ${model}`);
+                console.log(`Trying text model for generation: ${model} `);
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY} `,
                         "Content-Type": "application/json",
                         "HTTP-Referer": "http://localhost:3000",
                         "X-Title": "Scan-Essen"
@@ -411,12 +447,12 @@ Respond with JSON only, no other text.`;
                 const data = await response.json();
 
                 if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                    console.log(`Model ${model} failed: `, JSON.stringify(data.error));
                     continue;
                 }
 
                 const content = data.choices?.[0]?.message?.content || "{}";
-                console.log(`Model ${model} SUCCESS! Content:`, content.substring(0, 200));
+                console.log(`Model ${model} SUCCESS! Content: `, content.substring(0, 200));
 
                 let recipe: Recipe | null = null;
                 try {
@@ -448,7 +484,7 @@ Respond with JSON only, no other text.`;
                     continue;
                 }
             } catch (e) {
-                console.log(`Model ${model} error:`, e);
+                console.log(`Model ${model} error: `, e);
             }
         }
 
@@ -467,7 +503,9 @@ import {
     saveRecipeToHistory,
     getHistory,
     getUserStats,
-    clearIngredients
+    clearIngredients,
+    saveProfile,
+    getProfile
 } from "@/lib/store";
 
 export async function saveIngredientsAction(ingredients: Ingredient[]) {
@@ -492,4 +530,12 @@ export async function getHistoryAction() {
 
 export async function getStatsAction() {
     return await getUserStats();
+}
+
+export async function saveProfileAction(profile: UserProfile) {
+    await saveProfile(profile);
+}
+
+export async function getProfileAction() {
+    return await getProfile();
 }

@@ -46,7 +46,7 @@
       "name": "Peanut Butter",
       "quantity": "1 tub",
       "expiry_status": "fresh",
-      "expiry_reasoning": "Sealed container with unopened lid"
+      "expiry_reasoning": "Unopened and clearly labeled with expiration date, which has not passed."
     },
     {
       "name": "Medhe Medhe",
@@ -236,18 +236,116 @@
     },
     {
       "name": "Nuts",
-      "quantity": "handful",
+      "quantity": "1 piece",
       "expiry_status": "fresh",
-      "expiry_reasoning": "Unopened package, no visible expiration date"
+      "expiry_reasoning": "No visible packaging date"
     },
     {
       "name": "Peanut",
       "quantity": "1 piece",
       "expiry_status": "fresh",
       "expiry_reasoning": "No visible expiration date, sealed in shell and intact."
+    },
+    {
+      "name": "Mixed Vegetables",
+      "quantity": "small portion",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Appears to be freshly cut vegetables"
+    },
+    {
+      "name": "Clothing",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Not food"
+    },
+    {
+      "name": "Sunglasses",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Not food"
+    },
+    {
+      "name": "French Fries",
+      "quantity": "1 portion",
+      "expiry_status": "soon",
+      "expiry_reasoning": "Cooked food, likely to spoil if not consumed quickly"
+    },
+    {
+      "name": "Ketchup",
+      "quantity": "small amount",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Packaged condiment, likely has a long shelf life"
+    },
+    {
+      "name": "Cookie",
+      "quantity": "1 piece",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Nothing indicates spoilage yet."
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "Vegan Peanut Butter Protein Balls",
+        "ingredients": [
+          "1 tub Peanut Butter",
+          "1/2 cup Gluten-free oats",
+          "1/4 cup Chia seeds",
+          "1/4 cup Hemp seeds",
+          "1/4 cup Coconut sugar",
+          "1/2 teaspoon Salt",
+          "1/4 teaspoon Black pepper",
+          "1 tablespoon Coconut oil"
+        ],
+        "instructions": [
+          "In a large mixing bowl, combine peanut butter, coconut sugar, and salt. Mix until smooth.",
+          "Add gluten-free oats, chia seeds, and hemp seeds to the bowl. Mix until well combined.",
+          "Add coconut oil and mix until a dough forms.",
+          "Use your hands to shape the dough into small balls, about 1 inch in diameter.",
+          "Place the balls on a baking sheet lined with parchment paper and refrigerate for at least 30 minutes.",
+          "Serve chilled and store in an airtight container in the refrigerator for up to 5 days."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This recipe is high in protein and healthy fats, making it suitable for muscle gain. The use of gluten-free oats and avoidance of animal products cater to the user's vegan and gluten-free requirements. Additionally, the ingredients are low in phosphorus, potassium, and sodium, making it a relatively safe option for individuals with Chronic Kidney Disease.",
+        "magic_spice": "Cinnamon",
+        "magic_spice_reasoning": "Cinnamon adds a warm and comforting flavor to the peanut butter balls, while also providing antioxidant and anti-inflammatory benefits.",
+        "youtube_search_query": "Vegan Protein Balls"
+      },
+      "date": "2026-01-03T15:39:29.283Z"
+    },
+    {
+      "recipe": {
+        "title": "Emerald Green Pea & Walnut Power Bowl with Lemon-Tahini Dressing",
+        "ingredients": [
+          "1 cup Frozen Green Peas",
+          "1/2 cup Walnuts, roughly chopped",
+          "1/4 cup Cooked Quinoa (rinsed well)",
+          "1/4 cup Edamame (shelled)",
+          "1 tbsp Lemon Juice",
+          "1 tbsp Tahini",
+          "1 tbsp Water (or more, to adjust consistency)",
+          "1 tsp Olive Oil",
+          "1/2 tsp Garlic Powder",
+          "Pinch of Black Pepper",
+          "1/4 cup Spinach",
+          "1/4 cup chopped Cucumber"
+        ],
+        "instructions": [
+          "Steam or boil the green peas and edamame for 3-5 minutes, until bright green and tender-crisp. Drain and rinse with cold water to stop cooking.",
+          "In a small bowl, whisk together lemon juice, tahini, water, garlic powder, and black pepper to create the lemon-tahini dressing. Add more water, 1 teaspoon at a time, until desired consistency is reached.",
+          "In a larger bowl, combine the cooked quinoa, steamed peas, edamame, spinach, and cucumber.",
+          "Add the chopped walnuts to the bowl.",
+          "Drizzle the lemon-tahini dressing over the bowl and toss gently to combine.",
+          "Serve immediately or chill for later. A drizzle of olive oil can be added before serving."
+        ],
+        "health_score": 9,
+        "health_reasoning": "This recipe is excellent for someone with obesity and Chronic Kidney Disease. It's low in phosphorus (important for CKD), high in plant-based protein to support muscle building, and utilizes healthy fats from walnuts. The quinoa provides complex carbohydrates for sustained energy. It's also entirely vegan and gluten-free, addressing the user's dietary restrictions. The focus on vegetables and limited sodium is beneficial for both conditions. Portion control is still important, but this bowl is nutrient-dense and filling.",
+        "magic_spice": "Smoked Paprika",
+        "magic_spice_reasoning": "Smoked paprika adds a subtle smoky flavor that complements the walnuts and peas, enhancing the overall savory profile without adding sodium or unhealthy fats. It also provides a small antioxidant boost.",
+        "youtube_search_query": "Vegan Quinoa Bowl"
+      },
+      "date": "2026-01-03T15:37:21.493Z"
+    },
     {
       "recipe": {
         "title": "Sunrise Oven Omelette",
@@ -485,6 +583,158 @@
         "youtube_search_query": "No Bake Energy Balls"
       },
       "date": "2026-01-02T18:20:00.021Z"
+    },
+    {
+      "recipe": {
+        "title": "Error: Non-Edible Ingredients Provided",
+        "ingredients": [],
+        "instructions": [],
+        "health_score": 0,
+        "health_reasoning": "The provided ingredients, Clothing and Sunglasses, are not edible and cannot be used in a recipe. For a user with obesity and Chronic Kidney Disease, it's crucial to focus on nutrient-dense, kidney-friendly foods. A typical recipe for this user might include ingredients like lean proteins, whole grains, and a variety of vegetables.",
+        "magic_spice": "",
+        "magic_spice_reasoning": "",
+        "youtube_search_query": "vegan kidney-friendly recipes"
+      },
+      "date": "2026-01-03T12:26:34.035Z"
+    },
+    {
+      "recipe": {
+        "title": "Vibrant Thali Delight",
+        "ingredients": [
+          "1 cup brown rice",
+          "1 cup mixed lentils (moong, chana, and masoor)",
+          "2 cups water",
+          "1 tablespoon ghee or vegetable oil",
+          "1 small onion, diced",
+          "2 cloves garlic, minced",
+          "1 small ginger, grated",
+          "1 cup mixed vegetables (carrots, peas, and cauliflower)",
+          "1 teaspoon ground cumin",
+          "1 teaspoon ground coriander",
+          "1/2 teaspoon turmeric powder",
+          "1/2 teaspoon red chili powder",
+          "Salt, to taste",
+          "2 tablespoons plain yogurt",
+          "2 tablespoons chopped fresh cilantro",
+          "1 tablespoon lemon juice"
+        ],
+        "instructions": [
+          "Rinse the brown rice and lentils, then soak them in water for 30 minutes. Drain and set aside.",
+          "Heat ghee or oil in a large pan over medium heat. Add onion, garlic, and ginger, and sauté until the onion is translucent.",
+          "Add the mixed vegetables and cook until they are tender.",
+          "Add the cumin, coriander, turmeric, and chili powder, and stir well.",
+          "Add the soaked and drained rice and lentils to the pan, along with 2 cups of water. Bring to a boil, then reduce the heat to low and cover the pan.",
+          "Simmer for 20-25 minutes or until the rice and lentils are cooked and the water is absorbed.",
+          "Season with salt to taste.",
+          "In a small bowl, mix together yogurt, cilantro, and lemon juice.",
+          "To assemble the thali, place a portion of the rice and lentil mixture on a plate, followed by a dollop of the yogurt mixture and a variety of mixed vegetables."
+        ],
+        "health_score": 9,
+        "health_reasoning": "This thali recipe is high in fiber, protein, and vitamins, and low in calories and fat, making it a nutritious and balanced meal.",
+        "magic_spice": "Kasuri methi (dried fenugreek leaves)",
+        "magic_spice_reasoning": "Kasuri methi adds a unique flavor and aroma to the dish, and is also rich in antioxidants and fiber.",
+        "youtube_search_query": "Indian Thali Recipe"
+      },
+      "date": "2026-01-03T12:22:40.092Z"
+    },
+    {
+      "recipe": {
+        "title": "Gujarati Delight: Oven-Roasted Vegetable Handvo",
+        "ingredients": [
+          "1 cup split black gram (urad dal) - 200g",
+          "1/2 cup split green gram (moong dal) - 100g",
+          "1/2 cup rice - 100g",
+          "1/4 cup yogurt - 60g",
+          "1/2 cup mixed vegetables (carrots, beans, peas, corn) - 100g",
+          "1/2 cup grated bottle gourd - 50g",
+          "1 small onion, finely chopped - 50g",
+          "2 cloves garlic, minced - 6g",
+          "1 small ginger, grated - 20g",
+          "1 teaspoon ground cumin - 5g",
+          "1 teaspoon ground coriander - 5g",
+          "1/2 teaspoon turmeric powder - 2g",
+          "1/2 teaspoon red chili powder - 2g",
+          "Salt, to taste - 5g",
+          "2 tablespoons olive oil - 30g",
+          "Fresh cilantro, for garnish - 10g"
+        ],
+        "instructions": [
+          "Preheat the oven to 375°F (190°C).",
+          "In a large bowl, soak the split black gram, split green gram, and rice in water for 4-5 hours. Drain and grind into a coarse mixture.",
+          "In a separate bowl, whisk together the yogurt, mixed vegetables, grated bottle gourd, chopped onion, minced garlic, grated ginger, ground cumin, ground coriander, turmeric powder, red chili powder, and salt.",
+          "Add the yogurt mixture to the ground gram mixture and mix well.",
+          "Grease a 9x5-inch baking dish with olive oil and pour the mixture into it.",
+          "Bake for 35-40 minutes or until the Handvo is cooked through and golden brown on top.",
+          "Garnish with fresh cilantro and serve hot."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in protein, fiber, and vitamins, making it a nutritious and filling option. The use of olive oil and yogurt adds healthy fats, while the mixed vegetables provide a range of essential nutrients.",
+        "magic_spice": "Ajwain",
+        "magic_spice_reasoning": "Ajwain has a unique, slightly bitter and nutty flavor that pairs well with the sweetness of the vegetables and the earthiness of the gram mixture. It also aids in digestion and adds to the overall nutritional value of the dish.",
+        "youtube_search_query": "Gujarati Handvo Recipe"
+      },
+      "date": "2026-01-03T09:27:47.249Z"
+    },
+    {
+      "recipe": {
+        "title": "Gujarati Delight: Mixed Vegetable Handvo",
+        "ingredients": [
+          "1 cup mixed vegetables (carrots, peas, cauliflower, corn)",
+          "1 cup handvo mix (or idli/dosa batter)",
+          "1/2 cup yogurt",
+          "1/2 cup water",
+          "1 tsp ginger paste",
+          "1 tsp green chili paste",
+          "1 tsp cumin seeds",
+          "1 tsp coriander powder",
+          "1/2 tsp turmeric powder",
+          "1/2 tsp red chili powder",
+          "Salt, to taste",
+          "2 tbsp olive oil",
+          "Chopped cilantro, for garnish"
+        ],
+        "instructions": [
+          "Preheat the oven to 375°F (190°C).",
+          "In a large bowl, mix together the handvo mix, yogurt, water, ginger paste, green chili paste, cumin seeds, coriander powder, turmeric powder, red chili powder, and salt.",
+          "Add the mixed vegetables to the bowl and mix well.",
+          "Grease a 9-inch (23cm) round cake pan or a handvo mold with olive oil.",
+          "Pour the batter into the prepared pan and smooth the top.",
+          "Bake for 25-30 minutes or until a toothpick inserted comes out clean.",
+          "Remove from the oven and let it cool for 5 minutes.",
+          "Garnish with chopped cilantro and serve warm."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in fiber, protein, and vitamins from the mixed vegetables, and low in calories and fat. The handvo mix provides complex carbohydrates, making it a nutritious and filling option.",
+        "magic_spice": "Ajwain",
+        "magic_spice_reasoning": "Ajwain adds a unique flavor and aroma to the dish, and its digestive properties help to reduce bloating and gas. It complements the other spices and ingredients, elevating the overall taste and nutritional value of the handvo.",
+        "youtube_search_query": "Gujarati Handvo Recipe"
+      },
+      "date": "2026-01-03T09:21:13.173Z"
+    },
+    {
+      "recipe": {
+        "title": "Vibrant Vegetable Stir-Fry",
+        "ingredients": [
+          "1 cup Mixed Vegetables (small portion)",
+          "2 tablespoons olive oil",
+          "1 clove garlic, minced",
+          "1 teaspoon soy sauce",
+          "Salt and pepper to taste"
+        ],
+        "instructions": [
+          "Heat the olive oil in a large skillet or wok over medium-high heat.",
+          "Add the minced garlic and cook for 1 minute until fragrant.",
+          "Add the mixed vegetables and cook for 3-4 minutes, or until they start to soften.",
+          "Pour in the soy sauce and stir to combine, cooking for an additional 1-2 minutes.",
+          "Season with salt and pepper to taste, then serve hot."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in vitamins, minerals, and antioxidants from the mixed vegetables, and low in calories and fat, making it a nutritious and balanced option.",
+        "magic_spice": "Ginger",
+        "magic_spice_reasoning": "Adding a pinch of ginger would enhance the Asian-inspired flavors of the dish and provide additional health benefits, such as aiding digestion and reducing inflammation.",
+        "youtube_search_query": "Vegetable Stir-Fry"
+      },
+      "date": "2026-01-03T08:37:39.205Z"
     },
     {
       "recipe": {
@@ -1553,9 +1803,28 @@
     }
   ],
   "stats": {
-    "healthScore": 7.9,
-    "recipesCooked": 44,
-    "ingredientsSaved": 49,
+    "healthScore": 8.1,
+    "recipesCooked": 46,
+    "ingredientsSaved": 55,
     "wasteSaved": 95
+  },
+  "profile": {
+    "healthConditions": [
+      "obesity",
+      "Chronic Kidney Disease"
+    ],
+    "goals": [
+      "muscle"
+    ],
+    "allergies": [
+      "gluten"
+    ],
+    "dietaryApproach": "Vegan",
+    "state": "Himachal Pradesh",
+    "preferredLanguage": "Gujarati",
+    "cookingTime": "Standard",
+    "cookingConfidence": "Intermediate",
+    "age": 28,
+    "sex": "Male"
   }
 }

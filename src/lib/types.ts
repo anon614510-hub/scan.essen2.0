@@ -14,6 +14,7 @@ export interface Recipe {
     magic_spice?: string;
     magic_spice_reasoning?: string;
     youtube_search_query?: string;
+    restricted_ingredients?: string[];
 }
 
 export interface UserProfile {
@@ -26,4 +27,6 @@ export interface UserProfile {
     age?: number;
     sex?: 'Female' | 'Male' | 'Prefer not to say';
     customDislikes?: string;
+    state?: string;
+    preferredLanguage?: 'Hindi' | 'Gujarati' | 'Tamil' | 'Telugu' | 'English' | 'Marathi' | 'Bengali' | 'Kannada' | 'Malayalam' | 'Punjabi';
 }

@@ -1,29 +1,45 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronRight, ChevronLeft, Check, Leaf, Heart, Activity, Clock, ChefHat, AlertTriangle, Scale, Droplet } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Leaf, Heart, Activity, Clock, ChefHat, AlertTriangle, Scale, Droplet, MapPin } from 'lucide-react';
 import { UserProfile } from '@/lib/types';
 import clsx from 'clsx';
 import AnimatedProgressChart from './AnimatedProgressChart';
 
 interface OnboardingProps {
     onComplete: (profile: UserProfile) => void;
+    initialProfile?: Partial<UserProfile> | null;
 }
 
-type Step = 'welcome' | 'safety' | 'philosophy' | 'goals' | 'health' | 'kitchen' | 'basics' | 'preview' | 'complete';
+type Step = 'welcome' | 'safety' | 'philosophy' | 'health' | 'goals' | 'kitchen' | 'age' | 'diseases' | 'region' | 'sex' | 'preview' | 'complete';
 
-const STEPS: Step[] = ['welcome', 'safety', 'philosophy', 'health', 'goals', 'kitchen', 'basics', 'preview', 'complete'];
+const STEPS: Step[] = ['welcome', 'safety', 'philosophy', 'health', 'goals', 'kitchen', 'age', 'diseases', 'region', 'sex', 'preview', 'complete'];
 
 // Confetti component for celebration
 const Confetti = () => {
-    const colors = ['#6b8e23', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181'];
-    const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
-        id: i,
-        color: colors[i % colors.length],
-        left: `${Math.random() * 100}%`,
-        delay: `${Math.random() * 2}s`,
-        duration: `${2 + Math.random() * 2}s`
-    }));
+    const [confettiPieces, setConfettiPieces] = useState<{
+        id: number;
+        color: string;
+        left: string;
+        delay: string;
+        duration: string;
+        borderRadius: string;
+        rotation: number;
+    }[]>([]);
+
+    useEffect(() => {
+        const colors = ['#6b8e23', '#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#f38181'];
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setConfettiPieces(Array.from({ length: 50 }, (_, i) => ({
+            id: i,
+            color: colors[i % colors.length],
+            left: `${Math.random() * 100}%`,
+            delay: `${Math.random() * 2}s`,
+            duration: `${2 + Math.random() * 2}s`,
+            borderRadius: Math.random() > 0.5 ? '50%' : '0',
+            rotation: Math.random() * 360
+        })));
+    }, []);
 
     return (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
@@ -37,8 +53,8 @@ const Confetti = () => {
                         backgroundColor: piece.color,
                         animationDelay: piece.delay,
                         animationDuration: piece.duration,
-                        borderRadius: Math.random() > 0.5 ? '50%' : '0',
-                        transform: `rotate(${Math.random() * 360}deg)`
+                        borderRadius: piece.borderRadius,
+                        transform: `rotate(${piece.rotation}deg)`
                     }}
                 />
             ))}
@@ -46,14 +62,29 @@ const Confetti = () => {
     );
 };
 
-export default function Onboarding({ onComplete }: OnboardingProps) {
+const INDIAN_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+].sort();
+
+const COMMON_DISEASES = [
+    "Diabetes (Type 1)", "Diabetes (Type 2)", "Hypertension (High BP)", "PCOS/PCOD",
+    "Hypothyroidism", "Hyperthyroidism", "Cholesterol", "Gerd/Acidity",
+    "Celiac Disease", "IBS", "Anemia", "Chronic Kidney Disease", "Heart Disease"
+].sort();
+
+export default function Onboarding({ onComplete, initialProfile }: OnboardingProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [stepKey, setStepKey] = useState(0);
     const [showConfetti, setShowConfetti] = useState(false);
     const [typedText, setTypedText] = useState('');
     const currentStep = STEPS[currentStepIndex];
 
-    const [profile, setProfile] = useState<Partial<UserProfile>>({
+    const [profile, setProfile] = useState<Partial<UserProfile>>(initialProfile || {
         healthConditions: [],
         goals: [],
         allergies: [],
@@ -126,7 +157,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             case 'health': return true;
             case 'goals': return (profile.goals?.length || 0) > 0;
             case 'kitchen': return !!profile.cookingTime && !!profile.cookingConfidence;
-            case 'basics': return !!profile.sex && !!profile.age;
+            case 'age': return !!profile.age;
+            case 'diseases': return true;
+            case 'region': return !!profile.state && !!profile.preferredLanguage;
+            case 'sex': return !!profile.sex;
             case 'preview': return true;
             case 'complete': return true;
         }
@@ -167,8 +201,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         isSelected: boolean,
         onClick: () => void,
         icon?: React.ReactNode,
-        isMulti?: boolean,
-        staggerIndex?: number
+        isMulti?: boolean
     ) => (
         <button
             onClick={onClick}
@@ -225,7 +258,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         <div className="animate-fade-up mt-8" style={{ animationDelay: '1500ms' }}>
                             <p className="text-gray-500 text-sm">Let&apos;s personalize your experience</p>
                         </div>
-                    </div>
+                    </div >
                 );
 
             // SAFETY (Allergies)
@@ -437,8 +470,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     </div>
                 );
 
-            // BASICS (Age/Sex)
-            case 'basics':
+            // AGE
+            case 'age':
                 return (
                     <div className="space-y-6">
                         {renderHeader("The Basics", "This helps us calculate nutritional baselines accurately.")}
@@ -458,6 +491,133 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 >+</button>
                             </div>
                         </div>
+                    </div>
+                );
+
+            // DISEASES
+            case 'diseases':
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+                        {renderHeader("Health Awareness", "Select or type any medical conditions. This strictly locks restricted foods.")}
+                        <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                            <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <Activity className="w-4 h-4 text-red-500" />
+                                Medical Conditions
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Type other disease..."
+                                        className="flex-1 p-3 rounded-xl border border-[#e8ebd9] outline-none focus:border-[#6b8e23] transition-all"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                const val = (e.currentTarget as HTMLInputElement).value.trim();
+                                                if (val) {
+                                                    toggleSelection('healthConditions', val);
+                                                    (e.currentTarget as HTMLInputElement).value = '';
+                                                }
+                                            }
+                                        }}
+                                    />
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {COMMON_DISEASES.map(disease => (
+                                        <button
+                                            key={disease}
+                                            onClick={() => toggleSelection('healthConditions', disease)}
+                                            className={clsx(
+                                                "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                                                profile.healthConditions?.includes(disease)
+                                                    ? "bg-[#6b8e23] border-[#6b8e23] text-white shadow-md shadow-green-200"
+                                                    : "bg-[#f8faf7] border-[#e8ebd9] text-[#5c6b57] hover:border-[#6b8e23]"
+                                            )}
+                                        >
+                                            {disease}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
+                                    {profile.healthConditions?.filter(d => !COMMON_DISEASES.includes(d)).map(disease => (
+                                        <div
+                                            key={disease}
+                                            className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-sm"
+                                        >
+                                            {disease}
+                                            <button
+                                                onClick={() => toggleSelection('healthConditions', disease)}
+                                                className="w-4 h-4 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] hover:bg-amber-300"
+                                            >×</button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            // REGION
+            case 'region':
+                return (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+                        {renderHeader("Location & Language", "Customize your recommendations and video language.")}
+                        <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                            <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <MapPin className="w-4 h-4" />
+                                Select Your State
+                            </h3>
+                            <div className="relative">
+                                <select
+                                    value={profile.state || ""}
+                                    onChange={(e) => updateProfile({ state: e.target.value })}
+                                    className="w-full p-4 rounded-xl border-2 border-[#e8ebd9] bg-white text-[#2d3a28] font-bold outline-none focus:border-[#6b8e23] transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="" disabled>Choose a state...</option>
+                                    {INDIAN_STATES.map(state => (
+                                        <option key={state} value={state}>{state}</option>
+                                    ))}
+                                </select>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6b8e23]">
+                                    <ChevronRight className="w-5 h-5 rotate-90" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                            <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <Activity className="w-4 h-4" />
+                                Video Language Preference
+                            </h3>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[
+                                    { id: 'Hindi', label: 'Hindi' },
+                                    { id: 'English', label: 'English' },
+                                    { id: 'Tamil', label: 'Tamil' },
+                                    { id: 'Telugu', label: 'Telugu' },
+                                    { id: 'Gujarati', label: 'Gujarati' },
+                                ].map((lang) => (
+                                    <button
+                                        key={lang.id}
+                                        onClick={() => updateProfile({ preferredLanguage: lang.id as UserProfile['preferredLanguage'] })}
+                                        className={clsx(
+                                            "p-3 rounded-xl border-2 transition-all font-bold text-sm",
+                                            profile.preferredLanguage === lang.id
+                                                ? "bg-[#6b8e23] border-[#6b8e23] text-white shadow-md"
+                                                : "bg-[#f8faf5] border-[#e8ebd9] text-gray-700 hover:bg-white"
+                                        )}
+                                    >
+                                        {lang.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            // SEX
+            case 'sex':
+                return (
+                    <div className="space-y-6">
+                        {renderHeader("Biological Basics", "This helps us calculate nutritional baselines accurately.")}
                         <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm animate-card-entrance onboard-stagger-2">
                             <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Biological Sex</h3>
                             <div className="flex gap-2">
