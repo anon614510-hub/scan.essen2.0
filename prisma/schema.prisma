@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id // This will be the Clerk User ID (e.g., user_2xyz...)
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ingredients Ingredient[]
+  recipes     RecipeHistory[]
+  stats       UserStats?
+  profile     UserProfile?
+}
+
+model Ingredient {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name            String
+  quantity        String?
+  expiryStatus    String? // "fresh", "soon", "expired"
+  expiryReasoning String?
+  
+  createdAt DateTime @default(now())
+}
+
+model RecipeHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Storing the full recipe object as JSON for flexibility
+  recipe    Json 
+  
+  savedAt   DateTime @default(now())
+}
+
+model UserStats {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  healthScore      Float   @default(7.0)
+  recipesCooked    Int     @default(0)
+  ingredientsSaved Int     @default(0)
+  wasteSaved       Int     @default(0) // percentage
+}
+
+model UserProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  dietaryType   String?  @default("Omnivore") // Omnivore, Vegetarian, Vegan, etc.
+  allergies     String[] @default([])         // List of allergies
+  cookingSkill  String?  @default("Beginner") // Beginner, Intermediate, Pro
+  goals         String[] @default([])         // Weight loss, Muscle gain, etc.
+  
+  // Biometrics (Optional but good for health score)
+  height        Int?     // in cm
+  weight        Int?     // in kg
+  age           Int?
+  gender        String?  // Male, Female, Other, Prefer not to say
+  
+  updatedAt DateTime @updatedAt
+}

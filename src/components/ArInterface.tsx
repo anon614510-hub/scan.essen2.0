@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff, ChefHat } from "lucide-react";
+import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicOff, ChefHat, AlertTriangle, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
 import Link from "next/link";
-import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
+import { UserButton, SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction, getProfileAction } from "@/app/actions";
 import { Ingredient, Recipe } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
 
@@ -100,6 +102,30 @@ export default function ArInterface() {
     const streamRef = useRef<MediaStream | null>(null);
     const [isCameraActive, setIsCameraActive] = useState(false);
     const [isCameraLoading, setIsCameraLoading] = useState(false);
+
+    // Auth & Profile
+    const { user, isLoaded: isAuthLoaded } = useUser();
+    const router = useRouter();
+    const [userProfile, setUserProfile] = useState<any>(null);
+    const [safetyWarning, setSafetyWarning] = useState<string | null>(null);
+
+    // Load Profile & Check Onboarding
+    useEffect(() => {
+        if (!isAuthLoaded) return;
+
+        async function checkProfile() {
+            if (user) {
+                const profile = await getProfileAction();
+                if (!profile) {
+                    // Redirect to onboarding if logged in but no profile
+                    router.push("/onboarding");
+                } else {
+                    setUserProfile(profile);
+                }
+            }
+        }
+        checkProfile();
+    }, [user, isAuthLoaded, router]);
 
     // State for ingredients and recipes
     const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -368,6 +394,19 @@ export default function ArInterface() {
                 setNewlyScannedItems(validIngredients.map((i: Ingredient) => i.name));
                 setShowScanSuccess(true);
 
+                // --- SAFETY CHECK ---
+                if (userProfile && userProfile.allergies && userProfile.allergies.length > 0) {
+                    const allergyMatches = validIngredients.filter(ing =>
+                        userProfile.allergies.some((allergy: string) =>
+                            ing.name.toLowerCase().includes(allergy.toLowerCase())
+                        )
+                    );
+
+                    if (allergyMatches.length > 0) {
+                        setSafetyWarning(`⚠️ Warning: Found ${allergyMatches.map(m => m.name).join(", ")} which matches your allergies (${userProfile.allergies.join(", ")})!`);
+                    }
+                }
+
                 // Persist ingredients
                 saveIngredientsAction(validIngredients).catch(err => console.error("Failed to save ingredients:", err));
 
@@ -433,6 +472,23 @@ export default function ArInterface() {
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#f5f0e8] text-gray-900 font-sans">
             <canvas ref={canvasRef} className="hidden" />
+
+            {/* Auth Buttons & Profile */}
+            <div className="absolute top-4 right-4 z-40 flex items-center gap-2">
+                <Link href="/profile" className="p-2 bg-white/90 backdrop-blur rounded-full shadow-lg text-gray-700 hover:bg-gray-100 transition-colors">
+                    <ChefHat className="w-5 h-5" />
+                </Link>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
+                <SignedOut>
+                    <SignInButton mode="modal">
+                        <button className="px-4 py-2 bg-white/90 backdrop-blur rounded-full shadow-lg text-sm font-bold text-gray-800">
+                            Sign In
+                        </button>
+                    </SignInButton>
+                </SignedOut>
+            </div>
 
             {/* Camera Feed */}
             <video
@@ -592,9 +648,40 @@ export default function ArInterface() {
 
             {/* Error Toast */}
             {error && (
-                <div className="absolute top-4 left-4 right-4 z-50 bg-red-100 text-red-700 px-4 py-3 rounded-2xl text-sm font-medium shadow-lg">
+                <div className="absolute top-4 left-4 right-4 z-50 bg-red-100 text-red-700 px-4 py-3 rounded-2xl text-sm font-medium shadow-lg animate-in slide-in-from-top-4">
                     {error}
                     <button onClick={() => setError(null)} className="float-right font-bold">×</button>
+                </div>
+            )}
+
+            {/* Safety Warning Modal */}
+            {safetyWarning && (
+                <div className="absolute inset-x-4 top-24 z-50 bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-orange-500 animate-in bounce-in duration-300">
+                    <div className="bg-orange-500 p-3 flex items-center gap-2 text-white font-bold">
+                        <AlertTriangle className="w-5 h-5 fill-current text-white" />
+                        Safety Alert
+                    </div>
+                    <div className="p-4">
+                        <p className="text-gray-800 font-medium mb-4">{safetyWarning}</p>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    setIngredients([]); // Discard
+                                    setSafetyWarning(null);
+                                    setRecipe(null);
+                                }}
+                                className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200"
+                            >
+                                Discard Items
+                            </button>
+                            <button
+                                onClick={() => setSafetyWarning(null)}
+                                className="flex-1 py-2 bg-orange-100 text-orange-700 rounded-xl font-bold hover:bg-orange-200"
+                            >
+                                Ignore & Keep
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
 

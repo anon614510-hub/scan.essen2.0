@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,14 +38,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        {/* Camera and media permissions hints for mobile browsers */}
-        <meta httpEquiv="Permissions-Policy" content="camera=*, microphone=*" />
-      </head>
-      <body className={clsx(inter.className, "antialiased min-h-screen bg-black")}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          {/* Camera and media permissions hints for mobile browsers */}
+          <meta httpEquiv="Permissions-Policy" content="camera=*, microphone=*" />
+        </head>
+        <body className={clsx(inter.className, "antialiased min-h-screen bg-black")}>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

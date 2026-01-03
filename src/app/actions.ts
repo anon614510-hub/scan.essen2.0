@@ -1,11 +1,22 @@
 "use server";
 
 import { Ingredient, Recipe } from "@/lib/types";
+import {
+    saveIngredients,
+    getIngredients,
+    saveRecipeToHistory,
+    getHistory,
+    getUserStats,
+    clearIngredients
+} from "@/lib/store";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/db";
+import { UserProfile } from "@prisma/client";
 
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "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";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || "";
 
-console.log("DEBUG: API Key loaded:", process.env.OPENROUTER_API_KEY ? "YES (" + process.env.OPENROUTER_API_KEY.substring(0, 10) + "...)" : "NO (Using backup)");
+console.log("DEBUG: API Key loaded:", OPENROUTER_API_KEY ? "YES" : "NO");
 console.log("DEBUG: YouTube API Key loaded:", YOUTUBE_API_KEY ? "YES" : "NO");
 
 export interface YouTubeVideo {
@@ -84,12 +95,12 @@ Respond with a JSON array of food items only, no other text. Example:
 
         // VERIFIED free vision models from OpenRouter API
         const visionModels = [
-            "qwen/qwen2.5-vl-72b-instruct:free",
-            "qwen/qwen-2.5-vl-7b-instruct:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free",
+            "qwen/qwen-2.5-vl-72b-instruct:free",
+            "google/gemini-2.0-pro-exp-02-05:free",
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "google/gemini-2.0-flash-exp:free",
             "nvidia/nemotron-nano-12b-v2-vl:free",
-            "google/gemini-2.0-flash-exp:free"
+            "qwen/qwen-2.5-vl-7b-instruct:free"
         ];
 
         for (const model of visionModels) {
@@ -119,8 +130,8 @@ Respond with a JSON array of food items only, no other text. Example:
 
                 const data = await response.json();
 
-                if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                if (data.error || !response.ok) {
+                    console.log(`Model ${model} failed (Status ${response.status}):`, JSON.stringify(data.error || data));
                     continue;
                 }
 
@@ -203,6 +214,30 @@ export async function generateRecipe(
             return { recipe: null, error: "No ingredients provided" };
         }
 
+        // --- PERSONALIZATION: Fetch User Profile ---
+        console.log("DEBUG: Fetching user profile for recipe generation...");
+        let profile = null;
+        try {
+            profile = await getProfileAction();
+            console.log("DEBUG: Profile fetched:", profile ? "FOUND" : "NOT FOUND", profile);
+        } catch (profileError) {
+            console.error("DEBUG: Failed to fetch profile:", profileError);
+            // Continue without profile rather than failing
+        }
+
+        let profileContext = "";
+        if (profile) {
+            profileContext = `
+USER PROFILE (STRICTLY ADHERE TO THESE RULES):
+- Dietary Type: ${profile.dietaryType}
+- Allergies (FORBIDDEN): ${profile.allergies.join(", ")}
+- Cooking Skill: ${profile.cookingSkill}
+- Goals: ${profile.goals.join(", ")}
+
+Important: If the user has allergies, DO NOT include those ingredients. If they are Vegan/Vegetarian, respect that strictly.
+`;
+        }
+
         const ingredientList = ingredients
             .map((i) => `${i.name}${i.quantity ? ` (${i.quantity})` : ""}`)
             .join(", ");
@@ -220,6 +255,8 @@ export async function generateRecipe(
             : "";
 
         const prompt = `You are a creative AI chef. Generate a delicious, practical recipe using the provided ingredients.
+        
+${profileContext}
 
 ${cuisineNote}
 ${equipmentNote}
@@ -241,16 +278,11 @@ Create a recipe using these ingredients: ${ingredientList}`;
 
         // Verified working free text models (open source)
         const textModels = [
-            "nousresearch/deephermes-3-llama-3-8b-preview:free",
-            "nousresearch/hermes-3-llama-3.1-70b:free",
             "meta-llama/llama-3.3-70b-instruct:free",
             "mistralai/mistral-nemo:free",
-            "deepseek/deepseek-r1:free",
-            "moonshotai/kimi-k2:free",
-            "google/gemma-3-27b-it:free",
-            "qwen/qwen-2.5-vl-7b-instruct:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free"
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "knowledge/rubra-v1",
+            "deepseek/deepseek-r1:free"
         ];
 
         for (const model of textModels) {
@@ -274,8 +306,8 @@ Create a recipe using these ingredients: ${ingredientList}`;
 
                 const data = await response.json();
 
-                if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                if (data.error || !response.ok) {
+                    console.log(`Model ${model} failed (Status ${response.status}):`, JSON.stringify(data.error || data));
                     continue;
                 }
 
@@ -351,8 +383,25 @@ export async function generateRecipeByName(name: string, equipment: string[] = [
             ? `\nIMPORTANT: You must STRICTLY use ONLY the following equipment: ${equipment.join(", ")}. Do NOT use an oven, stove, or other appliances unless strictly specified.`
             : "";
 
+        // --- PERSONALIZATION: Fetch User Profile ---
+        const profile = await getProfileAction();
+        let profileContext = "";
+        if (profile) {
+            profileContext = `
+USER PROFILE (STRICTLY ADHERE TO THESE RULES):
+- Dietary Type: ${profile.dietaryType}
+- Allergies (FORBIDDEN): ${profile.allergies.join(", ")}
+- Cooking Skill: ${profile.cookingSkill}
+- Goals: ${profile.goals.join(", ")}
+
+Important: If the user has allergies, DO NOT include those ingredients. If they are Vegan/Vegetarian, respect that strictly.
+`;
+        }
+
         const prompt = `You are a world-class chef. Create a detailed, healthy recipe for: "${name}".
 Assume the user has basic pantry staples.${equipmentText}
+
+${profileContext}
 
 Respond with a JSON object containing:
 - title: creative recipe name (based on "${name}")
@@ -370,15 +419,11 @@ Respond with JSON only, no other text.`;
         // Verified working free text models (open source)
         const textModels = [
             "nousresearch/deephermes-3-llama-3-8b-preview:free",
-            "nousresearch/hermes-3-llama-3.1-70b:free",
             "meta-llama/llama-3.3-70b-instruct:free",
             "mistralai/mistral-nemo:free",
-            "deepseek/deepseek-r1:free",
-            "moonshotai/kimi-k2:free",
-            "google/gemma-3-27b-it:free",
-            "qwen/qwen-2.5-vl-7b-instruct:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free"
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "knowledge/rubra-v1",
+            "deepseek/deepseek-r1:free"
         ];
 
         for (const model of textModels) {
@@ -402,8 +447,8 @@ Respond with JSON only, no other text.`;
 
                 const data = await response.json();
 
-                if (data.error) {
-                    console.log(`Model ${model} failed:`, JSON.stringify(data.error));
+                if (data.error || !response.ok) {
+                    console.log(`Model ${model} failed (Status ${response.status}):`, JSON.stringify(data.error || data));
                     continue;
                 }
 
@@ -453,35 +498,113 @@ Respond with JSON only, no other text.`;
 }
 
 // --- Persistence Actions ---
-import {
-    saveIngredients,
-    getIngredients,
-    saveRecipeToHistory,
-    getHistory,
-    getUserStats,
-    clearIngredients
-} from "@/lib/store";
 
 export async function saveIngredientsAction(ingredients: Ingredient[]) {
-    await saveIngredients(ingredients);
+    const { userId } = await auth();
+    await saveIngredients(ingredients, userId);
 }
 
 export async function getIngredientsAction() {
-    return await getIngredients();
+    const { userId } = await auth();
+    return await getIngredients(userId);
 }
 
 export async function clearIngredientsAction() {
-    await clearIngredients();
+    const { userId } = await auth();
+    await clearIngredients(userId);
 }
 
 export async function saveRecipeAction(recipe: Recipe) {
-    await saveRecipeToHistory(recipe);
+    const { userId } = await auth();
+    await saveRecipeToHistory(recipe, userId);
 }
 
 export async function getHistoryAction() {
-    return await getHistory();
+    const { userId } = await auth();
+    return await getHistory(userId);
 }
 
 export async function getStatsAction() {
-    return await getUserStats();
+    const { userId } = await auth();
+    return await getUserStats(userId);
+}
+
+// --- Profile Actions ---
+
+export async function getProfileAction(): Promise<UserProfile | null> {
+    const { userId } = await auth();
+    console.log("DEBUG: getProfileAction called. UserId:", userId);
+
+    if (!userId) {
+        console.log("DEBUG: No userId found in auth()");
+        return null;
+    }
+
+    try {
+        const profile = await prisma.userProfile.findUnique({
+            where: { userId }
+        });
+        console.log("DEBUG: Prisma found profile:", profile);
+        return profile;
+    } catch (dbError) {
+        console.error("DEBUG: Prisma error in getProfileAction:", dbError);
+        throw dbError;
+    }
+}
+
+export async function saveProfileAction(data: Partial<UserProfile>) {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    // Ensure User exists before creating profile
+    const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!existingUser) {
+        console.log("DEBUG: User record missing, creating stub for:", userId);
+
+        // Try to get email from Clerk if possible, otherwise use placeholder
+        let email = `${userId}@placeholder.com`;
+        try {
+            const { currentUser } = await import("@clerk/nextjs/server");
+            const clerkUser = await currentUser();
+            if (clerkUser?.emailAddresses?.[0]?.emailAddress) {
+                email = clerkUser.emailAddresses[0].emailAddress;
+            }
+        } catch (e) {
+            console.error("Failed to fetch Clerk user details:", e);
+        }
+
+        await prisma.user.create({
+            data: {
+                id: userId,
+                email: email,
+            }
+        });
+    }
+
+    await prisma.userProfile.upsert({
+        where: { userId },
+        update: {
+            dietaryType: data.dietaryType,
+            allergies: data.allergies,
+            cookingSkill: data.cookingSkill,
+            goals: data.goals,
+            // Biometrics
+            height: data.height,
+            weight: data.weight,
+            age: data.age,
+            gender: data.gender,
+        },
+        create: {
+            userId,
+            dietaryType: data.dietaryType || "Omnivore",
+            allergies: data.allergies || [],
+            cookingSkill: data.cookingSkill || "Beginner",
+            goals: data.goals || [],
+            // Biometrics - default to null if not provided
+            height: data.height,
+            weight: data.weight,
+            age: data.age,
+            gender: data.gender,
+        }
+    });
 }
