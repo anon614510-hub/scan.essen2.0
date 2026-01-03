@@ -1,23 +1,39 @@
 "use client";
 
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, Check, Leaf, Heart, Activity, User, Clock, ChefHat, AlertTriangle, Scale, Droplet } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Leaf, Heart, Activity, User, Clock, ChefHat, AlertTriangle, Scale, Droplet, MapPin } from 'lucide-react';
 import { UserProfile } from '@/lib/types';
 import clsx from 'clsx';
 
 interface OnboardingProps {
     onComplete: (profile: UserProfile) => void;
+    initialProfile?: Partial<UserProfile> | null;
 }
 
-type Step = 'safety' | 'philosophy' | 'goals' | 'health' | 'kitchen' | 'basics';
+type Step = 'safety' | 'philosophy' | 'health' | 'goals' | 'kitchen' | 'age' | 'diseases' | 'region' | 'sex';
 
-const STEPS: Step[] = ['safety', 'philosophy', 'health', 'goals', 'kitchen', 'basics'];
+const STEPS: Step[] = ['safety', 'philosophy', 'health', 'goals', 'kitchen', 'age', 'diseases', 'region', 'sex'];
 
-export default function Onboarding({ onComplete }: OnboardingProps) {
+const INDIAN_STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana",
+    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+].sort();
+
+const COMMON_DISEASES = [
+    "Diabetes (Type 1)", "Diabetes (Type 2)", "Hypertension (High BP)", "PCOS/PCOD",
+    "Hypothyroidism", "Hyperthyroidism", "Cholesterol", "Gerd/Acidity",
+    "Celiac Disease", "IBS", "Anemia", "Chronic Kidney Disease", "Heart Disease"
+].sort();
+
+export default function Onboarding({ onComplete, initialProfile }: OnboardingProps) {
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const currentStep = STEPS[currentStepIndex];
 
-    const [profile, setProfile] = useState<Partial<UserProfile>>({
+    const [profile, setProfile] = useState<Partial<UserProfile>>(initialProfile || {
         healthConditions: [],
         goals: [],
         allergies: []
@@ -28,7 +44,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             setCurrentStepIndex(prev => prev + 1);
         } else {
             // Validate completeness before finishing
-            if (isStepValid('basics')) {
+            if (isStepValid('sex')) {
                 onComplete(profile as UserProfile);
             }
         }
@@ -57,12 +73,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
     const isStepValid = (step: Step) => {
         switch (step) {
-            case 'safety': return true; // Can have no allergies
+            case 'safety': return true;
             case 'philosophy': return !!profile.dietaryApproach;
-            case 'health': return true; // Can have no conditions
+            case 'health': return true;
             case 'goals': return (profile.goals?.length || 0) > 0;
             case 'kitchen': return !!profile.cookingTime && !!profile.cookingConfidence;
-            case 'basics': return !!profile.sex && !!profile.age; // Age/Sex required for this demo flow logic
+            case 'age': return !!profile.age;
+            case 'diseases': return true; // Optional but encouraged
+            case 'region': return !!profile.state && !!profile.preferredLanguage;
+            case 'sex': return !!profile.sex;
         }
     };
 
@@ -82,14 +101,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         </div>
     );
 
-    const renderOptionCard = (
-        label: string,
-        description: string | null,
-        isSelected: boolean,
-        onClick: () => void,
-        icon?: React.ReactNode,
-        isMulti?: boolean
-    ) => (
+    const OptionCard = ({
+        label,
+        description,
+        isSelected,
+        onClick,
+        icon,
+        isMulti
+    }: {
+        label: string;
+        description: string | null;
+        isSelected: boolean;
+        onClick: () => void;
+        icon?: React.ReactNode;
+        isMulti?: boolean;
+    }) => (
         <button
             onClick={onClick}
             className={clsx(
@@ -149,14 +175,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 { id: 'eggs', label: 'Eggs', icon: <div className="text-xl">🥚</div> },
                                 { id: 'gluten', label: 'Gluten / Celiac', icon: <div className="text-xl">🌾</div> },
                             ].map((item) => (
-                                renderOptionCard(
-                                    item.label,
-                                    null,
-                                    profile.allergies?.includes(item.id) || false,
-                                    () => toggleSelection('allergies', item.id),
-                                    item.icon,
-                                    true
-                                )
+                                <OptionCard
+                                    key={item.id}
+                                    label={item.label}
+                                    isSelected={profile.allergies?.includes(item.id) || false}
+                                    onClick={() => toggleSelection('allergies', item.id)}
+                                    icon={item.icon}
+                                    isMulti
+                                    description={null}
+                                />
                             ))}
 
                             <div className="mt-4">
@@ -180,17 +207,20 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 { id: 'Vegan', label: 'Vegan', desc: 'Plant-based only', icon: <Leaf className="w-6 h-6 text-green-600" /> },
                                 { id: 'Flexitarian', label: 'Flexitarian', desc: 'Mostly plants, occasional meat', icon: <Heart className="w-6 h-6" /> },
                             ].map((item) => (
-                                renderOptionCard(
-                                    item.label,
-                                    item.desc,
-                                    profile.dietaryApproach === item.id,
-                                    () => updateProfile({ dietaryApproach: item.id as UserProfile['dietaryApproach'] }),
-                                    item.icon,
-                                    false
-                                )
+                                <OptionCard
+                                    key={item.id}
+                                    label={item.label}
+                                    description={item.desc}
+                                    isSelected={profile.dietaryApproach === item.id}
+                                    onClick={() => updateProfile({ dietaryApproach: item.id as UserProfile['dietaryApproach'] })}
+                                    icon={item.icon}
+                                />
                             ))}
                         </div>
                     )}
+
+                    {/* STEP 2.5: REGION & LANGUAGE - MOVED TO END */}
+
 
                     {/* STEP 3: HEALTH PROFILE (Conditions) */}
                     {currentStep === 'health' && (
@@ -204,14 +234,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                 { id: 'cholesterol', label: 'High Cholesterol', icon: <Activity className="w-6 h-6" /> },
                                 { id: 'kidney', label: 'Kidney Health', icon: <Activity className="w-6 h-6" /> },
                             ].map((item) => (
-                                renderOptionCard(
-                                    item.label,
-                                    null,
-                                    profile.healthConditions?.includes(item.id) || false,
-                                    () => toggleSelection('healthConditions', item.id),
-                                    item.icon,
-                                    true
-                                )
+                                <OptionCard
+                                    key={item.id}
+                                    label={item.label}
+                                    isSelected={profile.healthConditions?.includes(item.id) || false}
+                                    onClick={() => toggleSelection('healthConditions', item.id)}
+                                    icon={item.icon}
+                                    isMulti
+                                    description={null}
+                                />
                             ))}
                         </div>
                     )}
@@ -333,13 +364,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         </div>
                     )}
 
-                    {/* STEP 6: THE BASICS */}
-                    {currentStep === 'basics' && (
+                    {/* STEP 6: AGE */}
+                    {currentStep === 'age' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
                             {renderHeader("The Basics", "This helps us calculate nutritional baselines accurately.")}
 
                             <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
-                                <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Age</h3>
+                                <h3 className="text-lg font-bold text-[#2d3a28] mb-4">How old are you?</h3>
                                 <div className="flex items-center justify-center gap-6">
                                     <button
                                         onClick={() => updateProfile({ age: Math.max(1, (profile.age || 30) - 1) })}
@@ -352,6 +383,139 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                                     >+</button>
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                    {/* NEW STEP: DISEASES (After Age) */}
+                    {currentStep === 'diseases' && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+                            {renderHeader("Health Awareness", "Select or type any medical conditions. This strictly locks restricted foods.")}
+
+                            <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                                <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <Activity className="w-4 h-4 text-red-500" />
+                                    Medical Conditions
+                                </h3>
+
+                                <div className="space-y-4">
+                                    {/* Custom Input */}
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Type other disease..."
+                                            className="flex-1 p-3 rounded-xl border border-[#e8ebd9] outline-none focus:border-[#6b8e23] transition-all"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    const val = (e.target as HTMLInputElement).value.trim();
+                                                    if (val) {
+                                                        toggleSelection('healthConditions', val);
+                                                        (e.target as HTMLInputElement).value = '';
+                                                    }
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Common Suggestions */}
+                                    <div className="flex flex-wrap gap-2">
+                                        {COMMON_DISEASES.map(disease => (
+                                            <button
+                                                key={disease}
+                                                onClick={() => toggleSelection('healthConditions', disease)}
+                                                className={clsx(
+                                                    "px-4 py-2 rounded-full text-sm font-medium transition-all border",
+                                                    profile.healthConditions?.includes(disease)
+                                                        ? "bg-[#6b8e23] border-[#6b8e23] text-white shadow-md shadow-green-200"
+                                                        : "bg-[#f8faf7] border-[#e8ebd9] text-[#5c6b57] hover:border-[#6b8e23]"
+                                                )}
+                                            >
+                                                {disease}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Selected Custom Items */}
+                                    <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
+                                        {profile.healthConditions?.filter(d => !COMMON_DISEASES.includes(d)).map(disease => (
+                                            <div
+                                                key={disease}
+                                                className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-sm"
+                                            >
+                                                {disease}
+                                                <button
+                                                    onClick={() => toggleSelection('healthConditions', disease)}
+                                                    className="w-4 h-4 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] hover:bg-amber-300"
+                                                >×</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* NEW STEP: LOCATION & LANGUAGE (After Disease) */}
+                    {currentStep === 'region' && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+                            {renderHeader("Location & Language", "Customize your recommendations and video language.")}
+
+                            <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                                <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <MapPin className="w-4 h-4" />
+                                    Select Your State
+                                </h3>
+                                <div className="relative">
+                                    <select
+                                        value={profile.state || ""}
+                                        onChange={(e) => updateProfile({ state: e.target.value })}
+                                        className="w-full p-4 rounded-xl border-2 border-[#e8ebd9] bg-white text-[#2d3a28] font-bold outline-none focus:border-[#6b8e23] transition-all appearance-none cursor-pointer"
+                                    >
+                                        <option value="" disabled>Choose a state...</option>
+                                        {INDIAN_STATES.map(state => (
+                                            <option key={state} value={state}>{state}</option>
+                                        ))}
+                                    </select>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#6b8e23]">
+                                        <ChevronRight className="w-5 h-5 rotate-90" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
+                                <h3 className="text-sm font-bold text-[#5c6b57] uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <Activity className="w-4 h-4" />
+                                    Video Language Preference
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        { id: 'Hindi', label: 'Hindi' },
+                                        { id: 'English', label: 'English' },
+                                        { id: 'Tamil', label: 'Tamil' },
+                                        { id: 'Telugu', label: 'Telugu' },
+                                        { id: 'Gujarati', label: 'Gujarati' },
+                                    ].map((lang) => (
+                                        <button
+                                            key={lang.id}
+                                            onClick={() => updateProfile({ preferredLanguage: lang.id as any })}
+                                            className={clsx(
+                                                "p-3 rounded-xl border-2 transition-all font-bold text-sm",
+                                                profile.preferredLanguage === lang.id
+                                                    ? "bg-[#6b8e23] border-[#6b8e23] text-white shadow-md"
+                                                    : "bg-[#f8faf5] border-[#e8ebd9] text-gray-700 hover:bg-white"
+                                            )}
+                                        >
+                                            {lang.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* NEW STEP: SEX */}
+                    {currentStep === 'sex' && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+                            {renderHeader("Biological Basics", "This helps us calculate nutritional baselines accurately.")}
 
                             <div className="bg-white p-6 rounded-2xl border border-[#e8ebd9] shadow-sm">
                                 <h3 className="text-lg font-bold text-[#2d3a28] mb-4">Biological Sex</h3>

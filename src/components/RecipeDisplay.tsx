@@ -1,35 +1,51 @@
-"use client";
-
-import { Recipe } from "@/lib/types";
-import { CheckCircle, AlertCircle, ChefHat, Sparkles, Star, Loader2 } from "lucide-react";
+import { Recipe, UserProfile } from "@/lib/types";
+import { CheckCircle, AlertCircle, ChefHat, Sparkles, Star, Loader2, MapPin, Activity } from "lucide-react";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
-import { searchYouTubeVideos, YouTubeVideo } from "@/app/actions";
+import { useEffect, useState, useMemo } from "react";
+import { searchYouTubeVideos, YouTubeVideo, getRegionalRecommendations } from "@/app/actions";
+import { Globe } from "lucide-react";
 
 interface RecipeDisplayProps {
     recipe: Recipe;
     onReset: () => void;
+    userProfile: UserProfile | null;
 }
 
-export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
+export default function RecipeDisplay({ recipe, onReset, userProfile }: RecipeDisplayProps) {
     const [videos, setVideos] = useState<YouTubeVideo[]>([]);
     const [loadingVideos, setLoadingVideos] = useState(true);
     const [videoError, setVideoError] = useState<string | null>(null);
+    const [regionalDishes, setRegionalDishes] = useState<string[]>([]);
+    const [selectedLanguage, setSelectedLanguage] = useState(userProfile?.preferredLanguage || 'English');
+
+    const LANGUAGES = [
+        'English', 'Hindi', 'Tamil', 'Telugu', 'Gujarati',
+        'Marathi', 'Bengali', 'Kannada', 'Malayalam', 'Punjabi'
+    ];
 
     useEffect(() => {
-        async function fetchVideos() {
+        async function fetchData() {
             setLoadingVideos(true);
             setVideoError(null);
+
+            // Fetch YouTube Videos with language preference and health restrictions
             const query = recipe.youtube_search_query || recipe.title;
-            const result = await searchYouTubeVideos(query, 2);
+            const result = await searchYouTubeVideos(query, 2, selectedLanguage, recipe.restricted_ingredients || []);
+
             if (result.error) {
                 setVideoError(result.error);
             }
             setVideos(result.videos);
             setLoadingVideos(false);
+
+            // Fetch Regional Recommendations (only on mount or profile change)
+            if (userProfile?.state) {
+                const dishes = await getRegionalRecommendations(userProfile.state);
+                setRegionalDishes(dishes);
+            }
         }
-        fetchVideos();
-    }, [recipe]);
+        fetchData();
+    }, [recipe, userProfile?.state, selectedLanguage]);
 
     const getHealthColor = (score: number) => {
         if (score >= 8) return "from-green-500/20 to-emerald-500/30 text-green-300 border-green-500/30";
@@ -47,11 +63,30 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
                         <ChefHat className="w-7 h-7 text-white" />
                     </div>
                     <div className="flex-1">
-                        <h2 className="text-2xl font-bold text-white mb-1">{recipe.title}</h2>
-                        <p className="text-sm text-emerald-300/80 flex items-center gap-1.5">
-                            <Sparkles className="w-4 h-4" />
-                            AI Chef's Recommendation
-                        </p>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-2xl font-bold text-white mb-1">{recipe.title}</h2>
+                                <p className="text-sm text-emerald-300/80 flex items-center gap-1.5">
+                                    <Sparkles className="w-4 h-4" />
+                                    AI Chef's Recommendation
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 backdrop-blur-md">
+                                <Globe className="w-4 h-4 text-emerald-400" />
+                                <select
+                                    value={selectedLanguage}
+                                    onChange={(e) => setSelectedLanguage(e.target.value as any)}
+                                    className="bg-transparent text-sm font-bold text-white outline-none cursor-pointer pr-1"
+                                >
+                                    {LANGUAGES.map(lang => (
+                                        <option key={lang} value={lang} className="bg-gray-900 border-none">
+                                            {lang}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div className={clsx(
                         "px-4 py-3 rounded-2xl border flex flex-col items-center justify-center bg-gradient-to-br backdrop-blur-sm",
@@ -134,11 +169,38 @@ export default function RecipeDisplay({ recipe, onReset }: RecipeDisplayProps) {
                     </div>
                 )}
 
+                {/* Regional Recommendations */}
+                {regionalDishes.length > 0 && (
+                    <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-6 rounded-3xl border border-indigo-500/20">
+                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
+                            <MapPin className="w-5 h-5 text-indigo-400" />
+                            Famous Dishes from {userProfile?.state}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {regionalDishes.map((dish, i) => (
+                                <span
+                                    key={i}
+                                    className="px-4 py-2 bg-indigo-500/20 text-indigo-200 rounded-full text-sm font-medium border border-indigo-500/30 animate-in zoom-in-95 duration-300"
+                                    style={{ animationDelay: `${i * 100}ms` }}
+                                >
+                                    {dish}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Video Tutorials */}
                 <div>
+                    {userProfile?.healthConditions && userProfile.healthConditions.length > 0 && (
+                        <div className="mb-4 px-1 flex items-center gap-2 text-rose-300/80 text-sm font-medium animate-in fade-in slide-in-from-left-4 duration-500">
+                            <Activity className="w-4 h-4" />
+                            <span>This recipe is prepared for people with: {userProfile.healthConditions.join(", ")}</span>
+                        </div>
+                    )}
                     <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3">
                         <span className="w-1.5 h-7 bg-gradient-to-b from-red-500 to-pink-600 rounded-full"></span>
-                        Video Tutorials
+                        Video Tutorials ({selectedLanguage})
                     </h3>
 
                     {loadingVideos ? (

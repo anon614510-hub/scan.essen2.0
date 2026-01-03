@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Search as SearchIcon, ArrowLeft, ChefHat, Clock, Flame, Sparkles, TrendingUp, Camera, BarChart2, HelpCircle, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
-import { getHistoryAction, generateRecipeByName, saveRecipeAction } from "@/app/actions";
-import { Recipe } from "@/lib/types";
+import { getHistoryAction, generateRecipeByName, saveRecipeAction, getProfileAction } from "@/app/actions";
+import { Recipe, UserProfile } from "@/lib/types";
 import RecipeDisplay from "@/components/RecipeDisplay";
 
 const POPULAR_SEARCHES = [
@@ -41,6 +41,7 @@ export default function SearchPage() {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedTools, setSelectedTools] = useState<string[]>([]);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
     // Handle back button to go to camera page
     useEffect(() => {
@@ -72,10 +73,14 @@ export default function SearchPage() {
         }
     };
 
-    // Load history on mount
+    // Load history and profile on mount
     useEffect(() => {
         getHistoryAction()
             .then(setHistory)
+            .catch(console.error);
+
+        getProfileAction()
+            .then(setUserProfile)
             .catch(console.error);
     }, []);
 
@@ -338,7 +343,11 @@ export default function SearchPage() {
                             >
                                 <X className="w-5 h-5" />
                             </button>
-                            <RecipeDisplay recipe={selectedRecipe} onReset={() => setSelectedRecipe(null)} />
+                            <RecipeDisplay
+                                recipe={selectedRecipe}
+                                onReset={() => setSelectedRecipe(null)}
+                                userProfile={userProfile}
+                            />
                         </div>
                     </div>
                 )

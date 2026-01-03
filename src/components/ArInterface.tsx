@@ -5,7 +5,7 @@ import { Camera, Search, BarChart2, HelpCircle, Loader2, ShoppingCart, Mic, MicO
 import clsx from "clsx";
 import Link from "next/link";
 import { analyzeImage, generateRecipe, getIngredientsAction, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
-import { Ingredient, Recipe } from "@/lib/types";
+import { Ingredient, Recipe, UserProfile } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
 
 
@@ -94,7 +94,7 @@ function getIngredientEmoji(name: string): string {
     return INGREDIENT_EMOJIS.default;
 }
 
-export default function ArInterface() {
+export default function ArInterface({ userProfile }: { userProfile: UserProfile | null }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -396,7 +396,7 @@ export default function ArInterface() {
         setIsGenerating(true);
         console.log("Generating recipe for ingredients:", ingredients.map(i => i.name));
         try {
-            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript);
+            const result = await generateRecipe(ingredients, "Any", [], voiceTranscript, userProfile);
             console.log("Recipe generation result:", result);
             if (result.error) {
                 console.error("Recipe error:", result.error);
@@ -607,7 +607,11 @@ export default function ArInterface() {
                     >
                         ✕
                     </button>
-                    <RecipeDisplay recipe={recipe} onReset={handleReset} />
+                    <RecipeDisplay
+                        recipe={recipe}
+                        onReset={handleReset}
+                        userProfile={userProfile}
+                    />
                 </div>
             )}
 

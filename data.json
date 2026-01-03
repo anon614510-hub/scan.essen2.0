@@ -215,9 +215,179 @@
       "quantity": "small amount",
       "expiry_status": "soon",
       "expiry_reasoning": "Residue on floor, likely expired"
+    },
+    {
+      "name": "Mixed Vegetables",
+      "quantity": "small portion",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Appears to be freshly cut vegetables"
+    },
+    {
+      "name": "Clothing",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Not food"
+    },
+    {
+      "name": "Sunglasses",
+      "quantity": "1",
+      "expiry_status": "fresh",
+      "expiry_reasoning": "Not food"
     }
   ],
   "recipes": [
+    {
+      "recipe": {
+        "title": "Error: Non-Edible Ingredients Provided",
+        "ingredients": [],
+        "instructions": [],
+        "health_score": 0,
+        "health_reasoning": "The provided ingredients, Clothing and Sunglasses, are not edible and cannot be used in a recipe. For a user with obesity and Chronic Kidney Disease, it's crucial to focus on nutrient-dense, kidney-friendly foods. A typical recipe for this user might include ingredients like lean proteins, whole grains, and a variety of vegetables.",
+        "magic_spice": "",
+        "magic_spice_reasoning": "",
+        "youtube_search_query": "vegan kidney-friendly recipes"
+      },
+      "date": "2026-01-03T12:26:34.035Z"
+    },
+    {
+      "recipe": {
+        "title": "Vibrant Thali Delight",
+        "ingredients": [
+          "1 cup brown rice",
+          "1 cup mixed lentils (moong, chana, and masoor)",
+          "2 cups water",
+          "1 tablespoon ghee or vegetable oil",
+          "1 small onion, diced",
+          "2 cloves garlic, minced",
+          "1 small ginger, grated",
+          "1 cup mixed vegetables (carrots, peas, and cauliflower)",
+          "1 teaspoon ground cumin",
+          "1 teaspoon ground coriander",
+          "1/2 teaspoon turmeric powder",
+          "1/2 teaspoon red chili powder",
+          "Salt, to taste",
+          "2 tablespoons plain yogurt",
+          "2 tablespoons chopped fresh cilantro",
+          "1 tablespoon lemon juice"
+        ],
+        "instructions": [
+          "Rinse the brown rice and lentils, then soak them in water for 30 minutes. Drain and set aside.",
+          "Heat ghee or oil in a large pan over medium heat. Add onion, garlic, and ginger, and sauté until the onion is translucent.",
+          "Add the mixed vegetables and cook until they are tender.",
+          "Add the cumin, coriander, turmeric, and chili powder, and stir well.",
+          "Add the soaked and drained rice and lentils to the pan, along with 2 cups of water. Bring to a boil, then reduce the heat to low and cover the pan.",
+          "Simmer for 20-25 minutes or until the rice and lentils are cooked and the water is absorbed.",
+          "Season with salt to taste.",
+          "In a small bowl, mix together yogurt, cilantro, and lemon juice.",
+          "To assemble the thali, place a portion of the rice and lentil mixture on a plate, followed by a dollop of the yogurt mixture and a variety of mixed vegetables."
+        ],
+        "health_score": 9,
+        "health_reasoning": "This thali recipe is high in fiber, protein, and vitamins, and low in calories and fat, making it a nutritious and balanced meal.",
+        "magic_spice": "Kasuri methi (dried fenugreek leaves)",
+        "magic_spice_reasoning": "Kasuri methi adds a unique flavor and aroma to the dish, and is also rich in antioxidants and fiber.",
+        "youtube_search_query": "Indian Thali Recipe"
+      },
+      "date": "2026-01-03T12:22:40.092Z"
+    },
+    {
+      "recipe": {
+        "title": "Gujarati Delight: Oven-Roasted Vegetable Handvo",
+        "ingredients": [
+          "1 cup split black gram (urad dal) - 200g",
+          "1/2 cup split green gram (moong dal) - 100g",
+          "1/2 cup rice - 100g",
+          "1/4 cup yogurt - 60g",
+          "1/2 cup mixed vegetables (carrots, beans, peas, corn) - 100g",
+          "1/2 cup grated bottle gourd - 50g",
+          "1 small onion, finely chopped - 50g",
+          "2 cloves garlic, minced - 6g",
+          "1 small ginger, grated - 20g",
+          "1 teaspoon ground cumin - 5g",
+          "1 teaspoon ground coriander - 5g",
+          "1/2 teaspoon turmeric powder - 2g",
+          "1/2 teaspoon red chili powder - 2g",
+          "Salt, to taste - 5g",
+          "2 tablespoons olive oil - 30g",
+          "Fresh cilantro, for garnish - 10g"
+        ],
+        "instructions": [
+          "Preheat the oven to 375°F (190°C).",
+          "In a large bowl, soak the split black gram, split green gram, and rice in water for 4-5 hours. Drain and grind into a coarse mixture.",
+          "In a separate bowl, whisk together the yogurt, mixed vegetables, grated bottle gourd, chopped onion, minced garlic, grated ginger, ground cumin, ground coriander, turmeric powder, red chili powder, and salt.",
+          "Add the yogurt mixture to the ground gram mixture and mix well.",
+          "Grease a 9x5-inch baking dish with olive oil and pour the mixture into it.",
+          "Bake for 35-40 minutes or until the Handvo is cooked through and golden brown on top.",
+          "Garnish with fresh cilantro and serve hot."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in protein, fiber, and vitamins, making it a nutritious and filling option. The use of olive oil and yogurt adds healthy fats, while the mixed vegetables provide a range of essential nutrients.",
+        "magic_spice": "Ajwain",
+        "magic_spice_reasoning": "Ajwain has a unique, slightly bitter and nutty flavor that pairs well with the sweetness of the vegetables and the earthiness of the gram mixture. It also aids in digestion and adds to the overall nutritional value of the dish.",
+        "youtube_search_query": "Gujarati Handvo Recipe"
+      },
+      "date": "2026-01-03T09:27:47.249Z"
+    },
+    {
+      "recipe": {
+        "title": "Gujarati Delight: Mixed Vegetable Handvo",
+        "ingredients": [
+          "1 cup mixed vegetables (carrots, peas, cauliflower, corn)",
+          "1 cup handvo mix (or idli/dosa batter)",
+          "1/2 cup yogurt",
+          "1/2 cup water",
+          "1 tsp ginger paste",
+          "1 tsp green chili paste",
+          "1 tsp cumin seeds",
+          "1 tsp coriander powder",
+          "1/2 tsp turmeric powder",
+          "1/2 tsp red chili powder",
+          "Salt, to taste",
+          "2 tbsp olive oil",
+          "Chopped cilantro, for garnish"
+        ],
+        "instructions": [
+          "Preheat the oven to 375°F (190°C).",
+          "In a large bowl, mix together the handvo mix, yogurt, water, ginger paste, green chili paste, cumin seeds, coriander powder, turmeric powder, red chili powder, and salt.",
+          "Add the mixed vegetables to the bowl and mix well.",
+          "Grease a 9-inch (23cm) round cake pan or a handvo mold with olive oil.",
+          "Pour the batter into the prepared pan and smooth the top.",
+          "Bake for 25-30 minutes or until a toothpick inserted comes out clean.",
+          "Remove from the oven and let it cool for 5 minutes.",
+          "Garnish with chopped cilantro and serve warm."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in fiber, protein, and vitamins from the mixed vegetables, and low in calories and fat. The handvo mix provides complex carbohydrates, making it a nutritious and filling option.",
+        "magic_spice": "Ajwain",
+        "magic_spice_reasoning": "Ajwain adds a unique flavor and aroma to the dish, and its digestive properties help to reduce bloating and gas. It complements the other spices and ingredients, elevating the overall taste and nutritional value of the handvo.",
+        "youtube_search_query": "Gujarati Handvo Recipe"
+      },
+      "date": "2026-01-03T09:21:13.173Z"
+    },
+    {
+      "recipe": {
+        "title": "Vibrant Vegetable Stir-Fry",
+        "ingredients": [
+          "1 cup Mixed Vegetables (small portion)",
+          "2 tablespoons olive oil",
+          "1 clove garlic, minced",
+          "1 teaspoon soy sauce",
+          "Salt and pepper to taste"
+        ],
+        "instructions": [
+          "Heat the olive oil in a large skillet or wok over medium-high heat.",
+          "Add the minced garlic and cook for 1 minute until fragrant.",
+          "Add the mixed vegetables and cook for 3-4 minutes, or until they start to soften.",
+          "Pour in the soy sauce and stir to combine, cooking for an additional 1-2 minutes.",
+          "Season with salt and pepper to taste, then serve hot."
+        ],
+        "health_score": 8,
+        "health_reasoning": "This dish is high in vitamins, minerals, and antioxidants from the mixed vegetables, and low in calories and fat, making it a nutritious and balanced option.",
+        "magic_spice": "Ginger",
+        "magic_spice_reasoning": "Adding a pinch of ginger would enhance the Asian-inspired flavors of the dish and provide additional health benefits, such as aiding digestion and reducing inflammation.",
+        "youtube_search_query": "Vegetable Stir-Fry"
+      },
+      "date": "2026-01-03T08:37:39.205Z"
+    },
     {
       "recipe": {
         "title": "Trash to Treasure Fork Revival",
@@ -1285,9 +1455,29 @@
     }
   ],
   "stats": {
-    "healthScore": 6.4,
-    "recipesCooked": 36,
-    "ingredientsSaved": 43,
+    "healthScore": 5.5,
+    "recipesCooked": 41,
+    "ingredientsSaved": 46,
     "wasteSaved": 95
+  },
+  "profile": {
+    "healthConditions": [
+      "obesity",
+      "Chronic Kidney Disease"
+    ],
+    "goals": [
+      "muscle"
+    ],
+    "allergies": [
+      "treenuts",
+      "dairy"
+    ],
+    "dietaryApproach": "Vegan",
+    "state": "Himachal Pradesh",
+    "preferredLanguage": "Gujarati",
+    "cookingTime": "Standard",
+    "cookingConfidence": "Intermediate",
+    "age": 27,
+    "sex": "Female"
   }
 }
