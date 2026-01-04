@@ -9,7 +9,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { analyzeImage, generateRecipe, saveIngredientsAction, saveRecipeAction, getStatsAction } from "@/app/actions";
 import { Ingredient, Recipe, UserProfile } from "@/lib/types";
 import RecipeDisplay from "./RecipeDisplay";
-
+import { UserButton } from "@clerk/nextjs";
 
 
 // Emoji mapping for common ingredients and food items
@@ -439,6 +439,15 @@ export default function ArInterface({ userProfile }: { userProfile: UserProfile 
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-[#f5f0e8] text-gray-900 font-sans">
             <canvas ref={canvasRef} className="hidden" />
+
+            {/* User Profile & Settings */}
+            <div className="absolute top-4 left-4 z-50">
+                <UserButton afterSignOutUrl="/" appearance={{
+                    elements: {
+                        avatarBox: "w-10 h-10 border-2 border-white/50 shadow-lg"
+                    }
+                }} />
+            </div>
 
             {/* Camera Feed */}
             <video

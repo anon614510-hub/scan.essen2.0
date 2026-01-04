@@ -7,18 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model User {
-  id        String   @id
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id        String       @id
+  email     String       @unique
+  createdAt DateTime     @default(now())
   profile   UserProfile?
   recipes   Recipe[]
+  ingredients Ingredient[]
 }
 
 model UserProfile {
   id                String   @id @default(cuid())
   userId            String   @unique
-  user              User     @relation(fields: [userId], references: [id])
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   healthConditions  String[]
   dietaryApproach   String
   goals             String[]
@@ -30,13 +32,31 @@ model UserProfile {
   customDislikes    String?
   state             String?
   preferredLanguage String?
+  updatedAt         DateTime @updatedAt
 }
 
 model Recipe {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  title     String
-  content   Json
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  cookingTime Int?
+  calories    Int?
+  healthScore Int?
+  content     Json
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Ingredient {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  quantity     String?
+  expiryStatus String?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
 }

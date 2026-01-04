@@ -497,45 +497,69 @@ Respond with JSON only, no other text.`;
 }
 
 // --- Persistence Actions ---
+// --- Persistence Actions ---
+// RETIRED: import { ... } from "@/lib/store";
 import {
-    saveIngredients,
-    getIngredients,
-    saveRecipeToHistory,
-    getHistory,
-    getUserStats,
-    clearIngredients,
-    saveProfile,
-    getProfile
-} from "@/lib/store";
+    saveUserIngredients,
+    saveUserRecipe,
+    getUserDashboardData,
+    getUserHistory,
+    saveDbUserProfile,
+    getOrCreateDbUser
+} from "@/lib/db-actions";
+// UserProfile is already imported at top
 
 export async function saveIngredientsAction(ingredients: Ingredient[]) {
-    await saveIngredients(ingredients);
+    try {
+        await saveUserIngredients(ingredients);
+    } catch (e) {
+        console.error("Failed to save ingredients to DB:", e);
+    }
 }
 
 export async function getIngredientsAction() {
-    return await getIngredients();
+    return [];
 }
 
 export async function clearIngredientsAction() {
-    await clearIngredients();
+    try {
+        await saveUserIngredients([]);
+    } catch (e) {
+        console.error("Failed to clear ingredients DB:", e);
+    }
 }
 
 export async function saveRecipeAction(recipe: Recipe) {
-    await saveRecipeToHistory(recipe);
+    try {
+        await saveUserRecipe(recipe);
+    } catch (e) {
+        console.error("Failed to save recipe to DB:", e);
+    }
 }
 
 export async function getHistoryAction() {
-    return await getHistory();
+    try {
+        return await getUserHistory();
+    } catch (e) {
+        console.error("Failed to get DB history:", e);
+        return [];
+    }
 }
 
 export async function getStatsAction() {
-    return await getUserStats();
+    try {
+        return await getUserDashboardData();
+    } catch (e) {
+        console.error("Failed to get DB stats:", e);
+        return { recipesCooked: 0, ingredientsCount: 0, healthScore: 7, wasteSaved: 0 };
+    }
 }
 
 export async function saveProfileAction(profile: UserProfile) {
-    await saveProfile(profile);
+    await saveDbUserProfile(profile);
 }
 
 export async function getProfileAction() {
-    return await getProfile();
+    const user = await getOrCreateDbUser();
+    return user?.profile as unknown as UserProfile || null;
 }

@@ -54,7 +54,12 @@ export default function YourDataPage() {
                     getStatsAction(),
                     getHistoryAction()
                 ]);
-                setStats(userStats);
+                setStats({
+                    healthScore: userStats.healthScore,
+                    recipesCooked: userStats.recipesCooked,
+                    ingredientsSaved: userStats.ingredientsCount,
+                    wasteSaved: userStats.wasteSaved
+                });
                 setHistory(userHistory);
             } catch (error) {
                 console.error("Failed to load data:", error);
